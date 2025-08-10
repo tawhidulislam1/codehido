@@ -1,0 +1,99 @@
+.swiper {
+  position: relative;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  width: 40px !important;
+  height: 40px !important;
+  border: 2px solid #2974ff;
+  border-radius: 9999px;
+  background: white !important;
+  color: #2974ff !important;
+  top: auto !important;
+  bottom: 40px !important;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background: #2974ff !important;
+  color: white !important;
+  border-color: #2974ff !important;
+  transform: scale(1.1);
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 18px !important;
+}
+
+/* Positioning */
+.swiper-button-prev {
+  left: 20px !important;
+}
+
+.swiper-button-next {
+  left: 70px !important;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    bottom: 30px !important;
+  }
+}
+@media (max-width: 768px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 32px !important;
+    height: 32px !important;
+    bottom: 20px !important;
+  }
+  .swiper-button-prev {
+    left: 15px !important;
+  }
+  .swiper-button-next {
+    left: 55px !important;
+  }
+}
+@media (max-width: 480px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 28px !important;
+    height: 28px !important;
+    bottom: 15px !important;
+  }
+  .swiper-button-prev {
+    left: 10px !important;
+  }
+  .swiper-button-next {
+    left: 45px !important;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1s ease-out forwards;
+}
+.animate-slideIn {
+  animation: slideIn 1.2s ease-out forwards;
+}
+
+/* Full Height */
+.header {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+}
