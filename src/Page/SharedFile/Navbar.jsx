@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sticky from "react-stickynode";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Navbar = () => {
   const [isSticky, setIsSticky] = useState(false);
@@ -46,12 +46,12 @@ const Navbar = () => {
           <ul className="menu menu-horizontal hidden lg:flex gap-4">
             {navLinks.map(({ name, url }) => (
               <li key={name}>
-                <Link
+                <NavLink
                   to={url}
                   className="text-gray-900 hover:text-[#2974FF] transition duration-300 text-sm"
                 >
                   {name}
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>

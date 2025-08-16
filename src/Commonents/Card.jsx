@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { motion } from "framer-motion";
 
 const Card = ({ service }) => {
@@ -8,7 +9,7 @@ const Card = ({ service }) => {
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             whileHover={{ scale: 1.05, boxShadow: "0 10px 20px rgba(41, 116, 255, 0.3)" }}
-            className="relative group bg-white rounded-xl shadow-md p-6 flex flex-col text-center items-center overflow-hidden cursor-pointer">
+            className="relative group bg-white rounded-xl shadow-md p-6 flex flex-col text-center items-center overflow-hidden cursor-pointer border-b-4 border-blue-600 hover:border-b-0">
 
             <div
                 className="absolute inset-0 bg-blue-600 origin-bottom scale-y-0 group-hover:scale-y-100 transition-transform duration-500 ease-in-out"

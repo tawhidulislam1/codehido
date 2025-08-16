@@ -13,7 +13,7 @@ export default function Footer() {
     const { pathname } = useLocation();
     console.log(pathname);
     return (
-        <>
+        <div className="mt-10">
             {pathname === '/' && <CallToAction />}
             <footer className="relative bg-[#0F172A] text-white overflow-hidden">
                 {/* Animated Gradient Background */}
@@ -112,6 +112,6 @@ export default function Footer() {
                     © {new Date().getFullYear()} Codehido. All rights reserved.
                 </div>
             </footer>
-        </>
+        </div>
     );
 }
