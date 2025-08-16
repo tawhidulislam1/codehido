@@ -1,6 +1,6 @@
 import React from 'react';
 import { GrHostMaintenance } from 'react-icons/gr';
-import Card from '../../../Commonents/Card';
+import Card from '../../Commonents/Card';
 
 const Service = () => {
     const services = [

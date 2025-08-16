@@ -1,5 +1,5 @@
 import { FaCheckCircle } from "react-icons/fa";
-const About = () => {
+const AboutSection = () => {
     return (
         <section className="relative bg-white py-20">
             <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -51,4 +51,4 @@ const About = () => {
         </section>
     );
 }
-export default About
+export default AboutSection
