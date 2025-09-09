@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const teamMembers = [
     {
@@ -94,16 +95,17 @@ const TeamSection = () => {
                                 </div>
 
                                 {/* Modern Animated Button */}
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="btn mt-6 relative overflow-hidden group bg-[#2974FF] text-white hover:text-[#2974FF] px-6 py-2 rounded-xl font-semibold shadow-md hover:bg-[#1558D6] transition"
-                                >
-                                    <span className="relative z-10 ">More Details</span>
-                                    <motion.span
-                                        className="absolute inset-0 bg-[#E6F0FF] translate-y-full group-hover:translate-y-0 transition-transform duration-300"
-                                    />
-                                </motion.button>
+                                <Link to={'/memberDetails'}>
+                                    <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="btn mt-6 relative overflow-hidden group bg-[#2974FF] text-white hover:text-[#2974FF] px-6 py-2 rounded-xl font-semibold shadow-md hover:bg-[#1558D6] transition"
+                                    >
+                                        <span className="relative z-10 ">More Details</span>
+                                        <motion.span
+                                            className="absolute inset-0 bg-[#E6F0FF] translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+                                        />
+                                    </motion.button></Link>
                             </div>
                         </motion.div>
                     ))}
