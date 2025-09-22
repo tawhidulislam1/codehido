@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
 import { FaLinkedin, FaTwitter, FaGithub, FaEnvelope } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 // Define the member object
 const memberData = {
@@ -44,6 +44,7 @@ const socialVariants = {
 
 // Component
 const TeamMemberDetails = ({ member }) => {
+
     return (
         <div className="min-h-screen bg-[#F5FAFF] flex items-center justify-center p-6">
             <motion.div
@@ -168,5 +169,8 @@ const TeamMemberDetails = ({ member }) => {
 
 // Export with member data
 export default function TeamMemberPage() {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
     return <TeamMemberDetails member={memberData} />;
 }
