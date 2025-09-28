@@ -5,6 +5,7 @@ import About from "../Page/About/About";
 import Service from "../Page/Service/Service";
 import Connect from "../Page/Connect/Connect";
 import TeamMemberPage from "../Page/TeamMemberDetails/TeamMemberDetails";
+import ServicesDetails from "../Page/ServiceDetails/ServicesDetails";
 
 const Router = createBrowserRouter([
     {
@@ -30,6 +31,10 @@ const Router = createBrowserRouter([
             {
                 path: '/memberDetails',
                 element: <TeamMemberPage />
+            },
+            {
+                path: '/servicesDetals',
+                element: <ServicesDetails />
             },
         ]
     },

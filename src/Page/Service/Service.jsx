@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const services = [
     {
@@ -55,14 +56,16 @@ const Service = () => {
                                 <p className="text-[#475569] mb-6">{service.description}</p>
 
                                 {/* Read More Button */}
-                                <motion.a
-                                    href="#"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="inline-block px-5 py-2 rounded-lg bg-[#2974FF] text-white font-medium shadow-md hover:bg-[#1558D6] transition-all duration-300"
-                                >
-                                    Read More
-                                </motion.a>
+                                <Link to={'/servicesDetals'}>
+                                    <motion.a
+                                        href="#"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="inline-block px-5 py-2 rounded-lg bg-[#2974FF] text-white font-medium shadow-md hover:bg-[#1558D6] transition-all duration-300"
+                                    >
+                                        Read More
+                                    </motion.a>
+                                </Link>
                             </div>
                         </motion.div>
                     ))}
