@@ -7,6 +7,9 @@ import Connect from "../Page/Connect/Connect";
 import TeamMemberPage from "../Page/TeamMemberDetails/TeamMemberDetails";
 import ServicesDetails from "../Page/ServiceDetails/ServicesDetails";
 import Testimonial from "../Page/Testimonial/Testimonial";
+import NotfoundPage from "../Page/NotfoundPage/NotfoundPage";
+import Portfolio from "../Page/Portfolio/Portfolio";
+import Teams from "../Page/Teams/Teams";
 
 const Router = createBrowserRouter([
     {
@@ -41,7 +44,22 @@ const Router = createBrowserRouter([
                 path: '/testimonial',
                 element: <Testimonial />
             },
+            {
+                path: '/portfolio',
+                element: <Portfolio />
+            },
+            {
+                path: '/teams',
+                element: <Teams />
+            },
+            {
+                path: "*",
+                element: <NotfoundPage />,
+            },
         ]
+
+
     },
+
 ]);
 export default Router
