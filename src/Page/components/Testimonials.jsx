@@ -88,7 +88,7 @@ const Testimonials = () => {
             </div>
 
             <a
-              href="/reviews"
+              href="/testimonial"
               className="inline-block px-6 py-3 bg-[#2974FF] text-white font-medium rounded-full shadow-md hover:bg-[#1558D6] transition-all"
             >
               See All Reviews

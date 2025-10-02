@@ -10,6 +10,8 @@ import Testimonial from "../Page/Testimonial/Testimonial";
 import NotfoundPage from "../Page/NotfoundPage/NotfoundPage";
 import Portfolio from "../Page/Portfolio/Portfolio";
 import Teams from "../Page/Teams/Teams";
+import Login from "../Page/Auth/Login";
+import Register from "../Page/Auth/Register";
 
 const Router = createBrowserRouter([
     {
@@ -51,6 +53,14 @@ const Router = createBrowserRouter([
             {
                 path: '/teams',
                 element: <Teams />
+            },
+            {
+                path: '/login',
+                element: <Login />
+            },
+            {
+                path: '/Register',
+                element: <Register />
             },
             {
                 path: "*",

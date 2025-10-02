@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "animate.css": "^4.1.1",
+    "firebase": "^12.3.0",
     "framer-motion": "^12.23.12",
     "localforage": "^1.10.0",
     "match-sorter": "^8.1.0",

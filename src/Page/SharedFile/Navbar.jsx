@@ -24,6 +24,7 @@ const Navbar = () => {
     { name: "Home", url: "/" },
     { name: "About", url: "/about" },
     { name: "Services", url: "/services" },
+    { name: "Contact", url: "/contact" },
     {
       name: "More",
       children: [
@@ -33,7 +34,7 @@ const Navbar = () => {
         { name: "Teams", url: "/teams" },
       ],
     },
-    { name: "Contact", url: "/contact" },
+    { name: "Login", url: "/login" },
   ];
 
   return (
