@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "animate.css": "^4.1.1",
+    "axios": "^1.12.2",
     "firebase": "^12.3.0",
     "framer-motion": "^12.23.12",
     "localforage": "^1.10.0",
@@ -24,6 +25,7 @@
     "react-router-dom": "^7.7.1",
     "react-stickynode": "^5.0.2",
     "sort-by": "^0.0.2",
+    "sweetalert2": "^11.23.0",
     "swiper": "^11.2.10"
   },
   "devDependencies": {

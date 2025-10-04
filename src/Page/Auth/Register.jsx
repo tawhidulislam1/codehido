@@ -1,16 +1,55 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import useAuth from "../../Hooks/useAuth";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const { createUser, updateUser } = useAuth();
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Register Data:", { name, email, password });
+    createUser(email, password)
+      .then(res => {
+
+        console.log(res);
+        const userInfo = {
+          name: name,
+          email: email,
+
+        };
+        console.log(userInfo);
+        // updateUser(name)
+        //   .then(() => {
+        //     axios.post("/user", userInfo)
+        //       .then(res => {
+        //         console.log(res);
+        //         if (res.data.insertedId) {
+        //           Swal.fire({
+        //             position: "top-center",
+        //             icon: "success",
+        //             title: "Your account has been created",
+        //             showConfirmButton: false,
+        //             timer: 1500
+        //           });
+        //         }
+        //       });
+
+        //     navigate('/');
+
+        //   });
+      })
+
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
   };
 
   return (
