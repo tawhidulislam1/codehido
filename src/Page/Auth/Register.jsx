@@ -5,55 +5,73 @@ import { motion } from "framer-motion";
 import useAuth from "../../Hooks/useAuth";
 import Swal from "sweetalert2";
 import axios from "axios";
+import useAxosPublic from "../../Hooks/useAxiosPublic";
 
 const Register = () => {
   const [name, setName] = useState("");
+  const [photo, setPhoto] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const imageHostingKey = import.meta.env.VITE_IMAGE_API;
+  const imageHostingApi = `https://api.imgbb.com/1/upload?key=${imageHostingKey}`;
   const { createUser, updateUser } = useAuth();
+  const axiosPublic = useAxosPublic();
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register Data:", { name, email, password });
-    createUser(email, password)
-      .then(res => {
 
-        console.log(res);
-        const userInfo = {
-          name: name,
-          email: email,
+    if (!photo) {
+      Swal.fire("Please upload a photo before registering!");
+      return;
+    }
 
-        };
-        console.log(userInfo);
-        // updateUser(name)
-        //   .then(() => {
-        //     axios.post("/user", userInfo)
-        //       .then(res => {
-        //         console.log(res);
-        //         if (res.data.insertedId) {
-        //           Swal.fire({
-        //             position: "top-center",
-        //             icon: "success",
-        //             title: "Your account has been created",
-        //             showConfirmButton: false,
-        //             timer: 1500
-        //           });
-        //         }
-        //       });
+    try {
+      // Step 1: Upload image to ImgBB
+      const formData = new FormData();
+      formData.append("image", photo);
 
-        //     navigate('/');
-
-        //   });
-      })
-
-      .catch((error) => {
-        const errorMessage = error.message;
-        console.log(errorMessage);
+      const imageRes = await axios.post(imageHostingApi, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
+
+      if (imageRes.data.success) {
+        const photoURL = imageRes.data.data.display_url;
+        console.log("Image uploaded:", photoURL);
+
+        // Step 2: Create user in Firebase
+        const res = await createUser(email, password);
+
+        // Step 3: Update Firebase user profile
+        await updateUser(name, photoURL);
+
+        // Step 4: Save user info to your backend (optional)
+        const userInfo = { name, email, photoURL };
+        await axiosPublic.post("/user", userInfo);
+
+        // Step 5: Success message
+        Swal.fire({
+          position: "top-center",
+          icon: "success",
+          title: "Your account has been created successfully!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate("/");
+      } else {
+        Swal.fire("Image upload failed. Please try again!");
+      }
+    } catch (error) {
+      console.error("Registration Error:", error.message);
+      Swal.fire("Error", error.message, "error");
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen" style={{ background: "#E6F0FF" }}>
+    <div
+      className="flex items-center justify-center min-h-screen"
+      style={{ background: "#E6F0FF" }}
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -69,12 +87,15 @@ const Register = () => {
           style={{ background: "linear-gradient(135deg, #2974FF, #1558D6)" }}
         ></motion.div>
 
-        <h2 className="text-3xl font-bold text-center mb-8" style={{ color: "#0F172A" }}>
+        <h2
+          className="text-3xl font-bold text-center mb-8"
+          style={{ color: "#0F172A" }}
+        >
           Create <span style={{ color: "#2974FF" }}>Codehido</span> Account
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name */}
+          {/* Full Name */}
           <div>
             <label className="block text-sm mb-1" style={{ color: "#475569" }}>
               Full Name
@@ -87,6 +108,22 @@ const Register = () => {
               onChange={(e) => setName(e.target.value)}
               required
               className="w-full px-4 py-3 border rounded-xl focus:outline-none transition"
+              style={{ borderColor: "#CBD5E1", color: "#0F172A" }}
+            />
+          </div>
+
+          {/* Profile Photo Upload */}
+          <div>
+            <label className="block text-sm mb-1" style={{ color: "#475569" }}>
+              Profile Photo
+            </label>
+            <motion.input
+              whileFocus={{ scale: 1.02 }}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setPhoto(e.target.files[0])}
+              required
+              className="w-full px-4 py-3 border rounded-xl focus:outline-none transition bg-white"
               style={{ borderColor: "#CBD5E1", color: "#0F172A" }}
             />
           </div>
@@ -125,13 +162,16 @@ const Register = () => {
             />
           </div>
 
-          {/* Button */}
+          {/* Register Button */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
             className="w-full py-3 rounded-xl font-semibold text-lg shadow-md transition"
-            style={{ background: "linear-gradient(90deg, #2974FF, #1558D6)", color: "#FFF" }}
+            style={{
+              background: "linear-gradient(90deg, #2974FF, #1558D6)",
+              color: "#FFF",
+            }}
           >
             Register
           </motion.button>
