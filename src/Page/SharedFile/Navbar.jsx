@@ -13,18 +13,35 @@ const Navbar = () => {
 
   // Logout
   const handleLogOut = () => {
-    logOut()
-      .then(() => {
-        Swal.fire({
-          icon: "success",
-          title: "You are logged out now!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      })
-      .catch((error) => {
-        console.error("Logout failed:", error);
-      });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out from your account.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#2974FF",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Log Out",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logOut()
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "You are logged out now!",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          })
+          .catch((error) => {
+            console.error("Logout failed:", error);
+            Swal.fire({
+              icon: "error",
+              title: "Logout failed!",
+              text: error.message,
+            });
+          });
+      }
+    });
   };
 
   // Sticky Navbar

@@ -12,6 +12,8 @@ import Portfolio from "../Page/Portfolio/Portfolio";
 import Teams from "../Page/Teams/Teams";
 import Login from "../Page/Auth/Login";
 import Register from "../Page/Auth/Register";
+import PrivateRoute from "./PrivateRoute";
+import DashboardLayout from "../Layout/DashboardLayout";
 
 const Router = createBrowserRouter([
     {
