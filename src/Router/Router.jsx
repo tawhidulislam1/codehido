@@ -70,6 +70,10 @@ const Router = createBrowserRouter([
 
 
     },
+    {
+        path: 'dashboard',
+        element: <PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
+    }
 
 ]);
 export default Router
