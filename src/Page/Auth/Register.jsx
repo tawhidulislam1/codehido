@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import useAuth from "../../Hooks/useAuth";
@@ -14,10 +14,14 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const imageHostingKey = import.meta.env.VITE_IMAGE_API;
   const imageHostingApi = `https://api.imgbb.com/1/upload?key=${imageHostingKey}`;
-  const { createUser, updateUser } = useAuth();
+  const { createUser, updateUser, user } = useAuth();
   const axiosPublic = useAxosPublic();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    if (user) {
+      navigate("/")
+    }
+  }, [navigate, user])
   const handleSubmit = async (e) => {
     e.preventDefault();
 

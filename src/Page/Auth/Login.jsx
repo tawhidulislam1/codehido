@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import useAuth from "../../Hooks/useAuth";
@@ -10,8 +10,13 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const { logIn } = useAuth();
+    const { logIn, user } = useAuth();
     const navigate = useNavigate();
+    useEffect(() => {
+        if (user) {
+            navigate("/")
+        }
+    }, [navigate, user])
 
     const handleSubmit = (e) => {
         e.preventDefault();
