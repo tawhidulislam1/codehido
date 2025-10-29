@@ -49,8 +49,9 @@ const Register = () => {
         // Step 3: Update Firebase user profile
         await updateUser(name, photoURL);
 
+        const role = 'user';
         // Step 4: Save user info to your backend (optional)
-        const userInfo = { name, email, photoURL };
+        const userInfo = { name, email, photoURL, role };
         await axiosPublic.post("/user", userInfo);
 
         // Step 5: Success message

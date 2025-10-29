@@ -14,6 +14,8 @@ import Login from "../Page/Auth/Login";
 import Register from "../Page/Auth/Register";
 import PrivateRoute from "./PrivateRoute";
 import DashboardLayout from "../Layout/DashboardLayout";
+import AllUsers from "../Page/Dashboard/allUser/AllUser";
+import AdminRoute from "./AdmintRoute";
 
 const Router = createBrowserRouter([
     {
@@ -75,6 +77,12 @@ const Router = createBrowserRouter([
     {
         path: 'dashboard',
         element: <PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
+        children: [
+            {
+                path: 'users',
+                element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
+            }
+        ]
     }
 
 ]);

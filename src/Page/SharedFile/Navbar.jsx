@@ -356,11 +356,11 @@ const Navbar = () => {
                     </span>
                   </div>
                   <NavLink
-                    to="/profile"
+                    to="/dashboard"
                     onClick={() => setMenuOpen(false)}
                     className="text-sm text-gray-800 hover:text-[#2974FF]"
                   >
-                    Profile
+                    Dashboard
                   </NavLink>
                   <button
                     onClick={handleLogOut}
