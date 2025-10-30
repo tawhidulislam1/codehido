@@ -115,8 +115,8 @@ const DashboardLayout = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/dashboard/add-portfolio" className={navLinkClass}>
-                    <FaPlusCircle /> Add Portfolio
+                  <NavLink to="/dashboard/portfolio" className={navLinkClass}>
+                    <FaPlusCircle /> Portfolio
                   </NavLink>
                 </li>
                 <li>

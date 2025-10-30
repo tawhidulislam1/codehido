@@ -17,6 +17,8 @@ import DashboardLayout from "../Layout/DashboardLayout";
 import AllUsers from "../Page/Dashboard/allUser/AllUser";
 import AdminRoute from "./AdmintRoute";
 import Dashboard from "../Page/Dashboard/Dashboard/Dashboard";
+import AdminPortfolio from "../Page/Dashboard/Portfolio/Portfolio";
+import AddProject from "../Page/Dashboard/Portfolio/AddProfolio";
 
 const Router = createBrowserRouter([
     {
@@ -85,8 +87,16 @@ const Router = createBrowserRouter([
             },
             {
                 path: 'dashboard',
-                element: <AdminRoute><Dashboard></Dashboard></AdminRoute>
-            }
+                element: <Dashboard></Dashboard>
+            },
+            {
+                path: 'portfolio',
+                element: <AdminPortfolio></AdminPortfolio>
+            },
+            {
+                path: 'add-porfolio',
+                element: <AddProject></AddProject>
+            },
         ]
     }
 
