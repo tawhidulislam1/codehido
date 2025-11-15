@@ -1,36 +1,47 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
-const initialProjects = [
-    { id: 1, name: "Fama Barber Shop", description: "Landing page built with React, Tailwind & Firebase.", status: "Active", link: "#" },
-    { id: 2, name: "Donation Hub", description: "Dynamic web app for managing charitable donations.", status: "Active", link: "#" },
-    { id: 3, name: "Smart Parking", description: "IoT-enabled parking management dashboard.", status: "Inactive", link: "#" },
-    { id: 4, name: "Roktho Bondhon", description: "Blood donation platform with real-time updates.", status: "Active", link: "#" },
-];
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AdminPortfolio() {
-    const [projects, setProjects] = useState(initialProjects);
-    const [userRole] = useState("admin");
+    const [userRole] = React.useState("admin");
     const navigate = useNavigate();
+    const AxiosPublic = useAxiosPublic();
 
-    const handleDelete = (id) => {
+    const { data: projects = [], isPending: isProjectLoading, refetch } = useQuery({
+        queryKey: ['portfolio'],
+        queryFn: async () => {
+            const res = await AxiosPublic.get('/dashboard/portfolio');
+            return res.data;
+        },
+    });
+
+    console.log(projects);
+    const handleDelete = async (id) => {
         if (userRole !== "admin") return alert("Only admin can delete projects!");
-        setProjects(projects.filter((p) => p.id !== id));
+        if (!confirm("Are you sure you want to delete this project?")) return;
+        await AxiosPublic.delete(`/dashboard/portfolio/${id}`);
+        refetch();
     };
 
-    const handleStatusChange = (id, newStatus) => {
-        setProjects(projects.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
+    const handleStatusChange = async (id, newStatus) => {
+        await AxiosPublic.patch(`/dashboard/portfolio/${id}`, { status: newStatus });
+        refetch();
     };
+
+    if (isProjectLoading) {
+        return <p className="text-center text-gray-600 py-10">Loading projects...</p>;
+    }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white text-gray-800 px-6 py-12">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white text-gray-800 px-4 sm:px-6 py-8 sm:py-12">
             {/* HEADER */}
-            <header className="max-w-6xl mx-auto flex justify-between items-center mb-10">
+            <header className="max-w-6xl mx-auto flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between items-center mb-10 text-center sm:text-left">
                 <motion.h1
-                    className="text-4xl font-bold text-blue-700"
+                    className="text-3xl sm:text-4xl font-bold text-blue-700"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
@@ -39,8 +50,8 @@ export default function AdminPortfolio() {
 
                 {userRole === "admin" && (
                     <button
-                        onClick={() => navigate("/dashboard/add-porfolio")}
-                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl shadow hover:bg-blue-700 transition-all cursor-pointer"
+                        onClick={() => navigate("/dashboard/add-portfolio")}
+                        className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-xl shadow hover:bg-blue-700 transition-all cursor-pointer w-full sm:w-auto"
                     >
                         <FaPlus /> Add Project
                     </button>
@@ -54,40 +65,39 @@ export default function AdminPortfolio() {
                 transition={{ duration: 0.5 }}
                 className="overflow-x-auto max-w-6xl mx-auto bg-white rounded-xl shadow-md border border-gray-200"
             >
-                <table className="min-w-full text-sm text-left">
-                    <thead className="bg-blue-100 text-blue-900 uppercase text-sm font-semibold">
+                <table className="min-w-full text-sm text-left border-collapse">
+                    <thead className="bg-blue-100 text-blue-900 uppercase text-xs sm:text-sm font-semibold">
                         <tr>
-                            <th className="px-6 py-3">#</th>
-                            <th className="px-6 py-3">Project Name</th>
-                            <th className="px-6 py-3">Description</th>
-                            <th className="px-6 py-3">Status</th>
-                            <th className="px-6 py-3 text-center">Actions</th>
+                            <th className="px-4 sm:px-6 py-3">#</th>
+                            <th className="px-4 sm:px-6 py-3">Project Name</th>
+                            <th className="px-4 sm:px-6 py-3 hidden md:table-cell">Description</th>
+                            <th className="px-4 sm:px-6 py-3">Status</th>
+                            <th className="px-4 sm:px-6 py-3 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {projects.map((p, index) => (
                             <tr
-                                key={p.id}
-                                className={`border-t border-gray-200 hover:bg-blue-50 transition-all ${p.status === "Inactive" ? "opacity-70" : ""
-                                    }`}
+                                key={p._id}
+                                className={`border-t border-gray-200 hover:bg-blue-50 transition-all ${p.status === "Inactive" ? "opacity-70" : ""}`}
                             >
-                                <td className="px-6 py-4">{index + 1}</td>
-                                <td className="px-6 py-4 font-medium">{p.name}</td>
-                                <td className="px-6 py-4">{p.description}</td>
-                                <td className="px-6 py-4">
-                                    <select
-                                        value={p.status}
-                                        onChange={(e) => handleStatusChange(p.id, e.target.value)}
-                                        className={`px-3 py-1 rounded-lg border text-sm font-medium ${p.status === "Active"
-                                                ? "bg-green-100 text-green-800 border-green-300"
-                                                : "bg-red-100 text-red-700 border-red-300"
-                                            }`}
-                                    >
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
-                                    </select>
-                                </td>
-                                <td className="px-6 py-4 text-center">
+                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{index + 1}</td>
+                                <td className="px-4 sm:px-6 py-4 font-medium">{p.name}</td>
+                                <td className="px-4 sm:px-6 py-4 hidden md:table-cell">{p.details}</td>
+                                <select
+                                    value={p.status}
+                                    disabled={userRole !== "admin"}
+                                    onChange={(e) => handleStatusChange(p._id, e.target.value)}
+                                    className={`px-3 py-1 rounded-lg border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all ${p.status === "active"
+                                            ? "bg-green-100 text-green-800 border-green-300"
+                                            : "bg-red-100 text-red-700 border-red-300"
+                                        } ${userRole !== "admin" ? "opacity-60 cursor-not-allowed" : ""}`}
+                                >
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+
+                                <td className="px-4 sm:px-6 py-4 text-center">
                                     <div className="flex justify-center gap-4 text-lg">
                                         <button
                                             className="text-blue-500 hover:text-blue-700"
@@ -97,7 +107,7 @@ export default function AdminPortfolio() {
                                         </button>
                                         {userRole === "admin" && (
                                             <button
-                                                onClick={() => handleDelete(p.id)}
+                                                onClick={() => handleDelete(p._id)}
                                                 className="text-red-500 hover:text-red-700"
                                             >
                                                 <FaTrash />

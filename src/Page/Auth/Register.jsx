@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import useAuth from "../../Hooks/useAuth";
 import Swal from "sweetalert2";
 import axios from "axios";
-import useAxosPublic from "../../Hooks/useAxiosPublic";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -15,7 +15,7 @@ const Register = () => {
   const imageHostingKey = import.meta.env.VITE_IMAGE_API;
   const imageHostingApi = `https://api.imgbb.com/1/upload?key=${imageHostingKey}`;
   const { createUser, updateUser, user } = useAuth();
-  const axiosPublic = useAxosPublic();
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   useEffect(() => {
     if (user) {

@@ -94,7 +94,7 @@ const Router = createBrowserRouter([
                 element: <AdminPortfolio></AdminPortfolio>
             },
             {
-                path: 'add-porfolio',
+                path: 'add-portfolio',
                 element: <AddProject></AddProject>
             },
         ]

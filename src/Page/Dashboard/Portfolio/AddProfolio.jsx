@@ -2,6 +2,8 @@ import React, { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import useAdmin from "../../../Hooks/useAdmin";
 
 export default function AddProject() {
     const [formData, setFormData] = useState({
@@ -13,11 +15,19 @@ export default function AddProject() {
         server: "",
         live: "",
         details: "",
+        status: 'inActive',
     });
-
+    const [isAdmin] = useAdmin()
+    console.log(isAdmin);
+    const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+
+    const payload = {
+        ...formData,
+        status: isAdmin ? 'active' : 'inactive',
+    };
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.name || !formData.technology || !formData.details) {
@@ -25,9 +35,16 @@ export default function AddProject() {
             return;
         }
 
-        console.log("✅ New Project Added:", formData);
-        alert("Project added successfully!");
-        navigate("/dashboard/portfolio"); 
+
+        try {
+            const result = await axiosPublic.post("/dashboard/portfolio", payload);
+            console.log("✅ New Project Added:", result.data);
+            alert("Project added successfully!");
+            navigate("/dashboard/portfolio");
+        } catch (error) {
+            console.error("❌ Error adding project:", error);
+            alert("Failed to add project. Please try again.");
+        }
     };
 
     return (
