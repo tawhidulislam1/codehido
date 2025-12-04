@@ -125,8 +125,8 @@ const DashboardLayout = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/dashboard/add-team-member" className={navLinkClass}>
-                    <MdOutlinePeople /> Add Team Member
+                  <NavLink to="/dashboard/team" className={navLinkClass}>
+                    <MdOutlinePeople /> Team Member
                   </NavLink>
                 </li>
                 <li>

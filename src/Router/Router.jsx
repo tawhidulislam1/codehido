@@ -21,6 +21,8 @@ import AdminPortfolio from "../Page/Dashboard/Portfolio/Portfolio";
 import AddProject from "../Page/Dashboard/Portfolio/AddProfolio";
 import EditPortfolio from "../Page/Dashboard/Portfolio/EditProfolio";
 import ViewPortfolio from "../Page/Portfolio/viewPortfolio";
+import TeamTable from "../Page/Dashboard/Teams/TeamList";
+import AddTeamMember from "../Page/Dashboard/Teams/addTeamMember";
 
 const Router = createBrowserRouter([
     {
@@ -109,6 +111,15 @@ const Router = createBrowserRouter([
                 path: 'edit-portfolio/:id',
                 element: <EditPortfolio></EditPortfolio>,
                 loader: ({ params }) => fetch(`http://localhost:5000/dashboard/portfolio/${params.id}`)
+            },
+            //? team page
+            {
+                path: 'team',
+                element: <TeamTable></TeamTable>,
+            },
+            {
+                path: 'team/add-member',
+                element: <AddTeamMember />
             },
 
         ]

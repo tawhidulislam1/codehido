@@ -97,18 +97,21 @@ export default function AdminPortfolio() {
                                 <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{index + 1}</td>
                                 <td className="px-4 sm:px-6 py-4 font-medium">{p.name}</td>
                                 <td className="px-4 sm:px-6 py-4 hidden md:table-cell">{p.designedBy}</td>
-                                <select
-                                    value={p.status}
-                                    disabled={!isAdmin}
-                                    onChange={(e) => handleStatusChange(p._id, e.target.value)}
-                                    className={`px-3 py-1 rounded-lg border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all ${p.status === "active"
-                                        ? "bg-green-100 text-green-800 border-green-300"
-                                        : "bg-red-100 text-red-700 border-red-300"
-                                        } ${!isAdmin ? "opacity-60 cursor-not-allowed" : ""}`}
-                                >
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                </select>
+                                <td className="px-4 sm:px-6 py-4  md:table-cell">
+                                    <select
+                                        value={p.status}
+                                        disabled={!isAdmin}
+                                        onChange={(e) => handleStatusChange(p._id, e.target.value)}
+                                        className={`px-3 py-1 rounded-lg border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all ${p.status === "active"
+                                            ? "bg-green-100 text-green-800 border-green-300"
+                                            : "bg-red-100 text-red-700 border-red-300"
+                                            } ${!isAdmin ? "opacity-60 cursor-not-allowed" : ""}`}
+                                    >
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </td>
+
 
 
                                 <td className="px-4 sm:px-6 py-4 text-center">
