@@ -20,6 +20,7 @@ import Dashboard from "../Page/Dashboard/Dashboard/Dashboard";
 import AdminPortfolio from "../Page/Dashboard/Portfolio/Portfolio";
 import AddProject from "../Page/Dashboard/Portfolio/AddProfolio";
 import EditPortfolio from "../Page/Dashboard/Portfolio/EditProfolio";
+import ViewPortfolio from "../Page/Portfolio/viewPortfolio";
 
 const Router = createBrowserRouter([
     {
@@ -71,9 +72,15 @@ const Router = createBrowserRouter([
                 element: <Register />
             },
             {
+                path: '/portfolio/:id',
+                element: <ViewPortfolio></ViewPortfolio>,
+
+            },
+            {
                 path: "*",
                 element: <NotfoundPage />,
             },
+
         ]
 
 
@@ -103,6 +110,7 @@ const Router = createBrowserRouter([
                 element: <EditPortfolio></EditPortfolio>,
                 loader: ({ params }) => fetch(`http://localhost:5000/dashboard/portfolio/${params.id}`)
             },
+
         ]
     }
 

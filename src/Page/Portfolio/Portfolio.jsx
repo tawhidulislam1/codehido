@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../../Hooks/useAxiosPublic";
+import { Link } from "react-router-dom";
 
 const Portfolio = () => {
     const AxiosPublic = useAxiosPublic();
@@ -27,7 +28,7 @@ const Portfolio = () => {
             <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {projects.map((project) => {
                     const techTags = project.technology ? project.technology.split(',') : [];
-                    const projectLink = project.live || project.github || project.server || "#";
+                    
 
                     return (
                         <div
@@ -41,16 +42,14 @@ const Portfolio = () => {
                                     alt={project.name}
                                     className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
                                 />
-                                <a
-                                    href={projectLink}
-                                    target="_blank"
+                                <Link to={`/portfolio/${project._id}`}
                                     rel="noopener noreferrer"
                                     className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition duration-300"
                                 >
                                     <span className="text-white font-medium text-lg bg-[#2974FF] px-4 py-2 rounded-lg shadow">
-                                        View Project
+                                        View More
                                     </span>
-                                </a>
+                                </Link>
                             </div>
 
                             {/* Content */}
