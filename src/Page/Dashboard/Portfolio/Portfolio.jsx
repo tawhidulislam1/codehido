@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 
 import { motion } from "framer-motion";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
+
 import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
@@ -82,7 +83,7 @@ export default function AdminPortfolio() {
                         <tr>
                             <th className="px-4 sm:px-6 py-3">#</th>
                             <th className="px-4 sm:px-6 py-3">Project Name</th>
-                            <th className="px-4 sm:px-6 py-3 hidden md:table-cell">Description</th>
+                            <th className="px-4 sm:px-6 py-3 hidden md:table-cell">Developer</th>
                             <th className="px-4 sm:px-6 py-3">Status</th>
                             <th className="px-4 sm:px-6 py-3 text-center">Actions</th>
                         </tr>
@@ -95,7 +96,7 @@ export default function AdminPortfolio() {
                             >
                                 <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{index + 1}</td>
                                 <td className="px-4 sm:px-6 py-4 font-medium">{p.name}</td>
-                                <td className="px-4 sm:px-6 py-4 hidden md:table-cell">{p.details}</td>
+                                <td className="px-4 sm:px-6 py-4 hidden md:table-cell">{p.designedBy}</td>
                                 <select
                                     value={p.status}
                                     disabled={!isAdmin}
@@ -109,25 +110,37 @@ export default function AdminPortfolio() {
                                     <option value="inactive">Inactive</option>
                                 </select>
 
+
                                 <td className="px-4 sm:px-6 py-4 text-center">
                                     <div className="flex justify-center gap-4 text-lg">
-
+                                        {/* View Button */}
                                         <button
-                                            className="text-blue-500 hover:text-blue-700"
+                                            className="text-green-500 cursor-pointer hover:text-green-700"
+                                            onClick={() => navigate(`/portfolio/${p._id}`)}
+                                        >
+                                            <FaEye />
+                                        </button>
+
+                                        {/* Edit Button */}
+                                        <button
+                                            className="text-blue-500 cursor-pointer hover:text-blue-700"
                                             onClick={() => navigate(`/dashboard/edit-portfolio/${p._id}`)}
                                         >
                                             <FaEdit />
                                         </button>
+
+                                        {/* Delete Button (Admin only) */}
                                         {isAdmin && (
                                             <button
                                                 onClick={() => handleDelete(p._id)}
-                                                className="text-red-500 hover:text-red-700"
+                                                className="text-red-500 cursor-pointer hover:text-red-700"
                                             >
                                                 <FaTrash />
                                             </button>
                                         )}
                                     </div>
                                 </td>
+
                             </tr>
                         ))}
                     </tbody>

@@ -28,7 +28,7 @@ const Portfolio = () => {
             <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {projects.map((project) => {
                     const techTags = project.technology ? project.technology.split(',') : [];
-                    
+
 
                     return (
                         <div
@@ -55,7 +55,12 @@ const Portfolio = () => {
                             {/* Content */}
                             <div className="p-5">
                                 <h3 className="text-xl font-semibold text-gray-900">{project.name}</h3>
-                                <p className="text-gray-600 text-sm mt-2">{project.details}</p>
+                                <p className="text-gray-600 text-sm mt-2">
+                                    {project.details.length > 100
+                                        ? project.details.slice(0, 100) + "..."
+                                        : project.details}
+                                </p>
+
 
                                 {/* Tech Tags */}
                                 <div className="flex flex-wrap gap-2 mt-4">
