@@ -24,7 +24,7 @@ export default function AdminPortfolio() {
 
     console.log(projects);
     const handleDelete = async (id) => {
-        if (isAdmin !== "admin") return alert("Only admin can delete projects!");
+        if (!isAdmin) return alert("Only admin can delete projects!");
         if (!confirm("Are you sure you want to delete this project?")) return;
         await AxiosPublic.delete(`/dashboard/portfolio/${id}`);
         refetch();
@@ -36,7 +36,7 @@ export default function AdminPortfolio() {
                 if (res.data.modifiedCount > 0) {
                     Swal.fire({
                         title: "Status Updated!",
-                        text: `Your Blood Is ${status}`,
+                        text: `Your portfolio Is ${status}`,
                         icon: "success",
                     });
                     refetch();
@@ -114,7 +114,7 @@ export default function AdminPortfolio() {
 
                                         <button
                                             className="text-blue-500 hover:text-blue-700"
-                                            onClick={() => navigate("/dashboard/edit-portfolio")}
+                                            onClick={() => navigate(`/dashboard/edit-portfolio/${p._id}`)}
                                         >
                                             <FaEdit />
                                         </button>

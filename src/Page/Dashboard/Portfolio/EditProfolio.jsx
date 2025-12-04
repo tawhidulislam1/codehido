@@ -1,31 +1,36 @@
 import React, { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLoaderData } from "react-router-dom";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
-import useAdmin from "../../../Hooks/useAdmin";
+;
 
 export default function EditPortfolio() {
+    // Load existing project data
+    const { _id, name, technology, designedBy, image, github, server, live, details, status } = useLoaderData();
+
+    // Initialize form with existing data
     const [formData, setFormData] = useState({
-        name: "",
-        technology: "",
-        designedBy: "",
-        image: "",
-        github: "",
-        server: "",
-        live: "",
-        details: "",
-        status: 'inactive',
+        name: name || "",
+        technology: technology || "",
+        designedBy: designedBy || "",
+        image: image || "",
+        github: github || "",
+        server: server || "",
+        live: live || "",
+        details: details || "",
+        status: status || 'inactive',
     });
-    const [isAdmin] = useAdmin();
+
     const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
 
+    // Merge formData with admin status
     const payload = {
         ...formData,
-        status: isAdmin ? 'active' : 'inactive',
     };
 
+    // Handle form submit for editing
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -35,13 +40,13 @@ export default function EditPortfolio() {
         }
 
         try {
-            const result = await axiosPublic.post("/dashboard/portfolio", payload);
-            console.log("✅ New Project Added:", result.data);
-            alert("Project added successfully!");
+            const result = await axiosPublic.put(`/dashboard/portfolio/${_id}`, payload);
+            console.log("✅ Project Updated:", result.data);
+            alert("Project updated successfully!");
             navigate("/dashboard/portfolio");
         } catch (error) {
-            console.error("❌ Error adding project:", error);
-            alert("Failed to add project. Please try again.");
+            console.error("❌ Error updating project:", error);
+            alert("Failed to update project. Please try again.");
         }
     };
 
@@ -53,12 +58,12 @@ export default function EditPortfolio() {
                 className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-3xl border border-gray-100 overflow-y-auto"
             >
                 <h2 className="text-3xl font-bold text-blue-700 mb-8 text-center">
-                    Add / Edit Project
+                    Edit Project
                 </h2>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-8">
 
-                    {/* Project Info Section */}
+                    {/* Project Info */}
                     <div className="space-y-4">
                         <h3 className="text-xl font-semibold text-gray-700">Project Info</h3>
 
@@ -87,7 +92,7 @@ export default function EditPortfolio() {
                         />
                     </div>
 
-                    {/* Links Section */}
+                    {/* Links */}
                     <div className="space-y-4">
                         <h3 className="text-xl font-semibold text-gray-700">Project Links</h3>
 
@@ -123,7 +128,6 @@ export default function EditPortfolio() {
                             className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                         />
 
-                        {/* Image Preview */}
                         {formData.image && (
                             <div className="mt-2">
                                 <img
@@ -135,7 +139,7 @@ export default function EditPortfolio() {
                         )}
                     </div>
 
-                    {/* Details Section */}
+                    {/* Details */}
                     <div className="space-y-4">
                         <h3 className="text-xl font-semibold text-gray-700">Project Details</h3>
 
@@ -160,7 +164,7 @@ export default function EditPortfolio() {
                             type="submit"
                             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-md"
                         >
-                            Save Project
+                            Update Project
                         </button>
                     </div>
                 </form>

@@ -99,8 +99,9 @@ const Router = createBrowserRouter([
                 element: <AddProject></AddProject>
             },
             {
-                path: 'edit-portfolio',
-                element: <EditPortfolio></EditPortfolio>
+                path: 'edit-portfolio/:id',
+                element: <EditPortfolio></EditPortfolio>,
+                loader: ({ params }) => fetch(`http://localhost:5000/dashboard/portfolio/${params.id}`)
             },
         ]
     }
