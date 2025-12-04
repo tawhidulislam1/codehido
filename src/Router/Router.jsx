@@ -19,6 +19,7 @@ import AdminRoute from "./AdmintRoute";
 import Dashboard from "../Page/Dashboard/Dashboard/Dashboard";
 import AdminPortfolio from "../Page/Dashboard/Portfolio/Portfolio";
 import AddProject from "../Page/Dashboard/Portfolio/AddProfolio";
+import EditPortfolio from "../Page/Dashboard/Portfolio/EditProfolio";
 
 const Router = createBrowserRouter([
     {
@@ -96,6 +97,10 @@ const Router = createBrowserRouter([
             {
                 path: 'add-portfolio',
                 element: <AddProject></AddProject>
+            },
+            {
+                path: 'edit-portfolio',
+                element: <EditPortfolio></EditPortfolio>
             },
         ]
     }

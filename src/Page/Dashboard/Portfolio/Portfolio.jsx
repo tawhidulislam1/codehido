@@ -1,16 +1,19 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
+import Swal from "sweetalert2";
+
+import useAdmin from "../../../Hooks/useAdmin";
 
 export default function AdminPortfolio() {
-    const [userRole] = React.useState("admin");
+    const [isAdmin] = useAdmin()
     const navigate = useNavigate();
     const AxiosPublic = useAxiosPublic();
-
+    console.log(isAdmin);
     const { data: projects = [], isPending: isProjectLoading, refetch } = useQuery({
         queryKey: ['portfolio'],
         queryFn: async () => {
@@ -21,15 +24,24 @@ export default function AdminPortfolio() {
 
     console.log(projects);
     const handleDelete = async (id) => {
-        if (userRole !== "admin") return alert("Only admin can delete projects!");
+        if (isAdmin !== "admin") return alert("Only admin can delete projects!");
         if (!confirm("Are you sure you want to delete this project?")) return;
         await AxiosPublic.delete(`/dashboard/portfolio/${id}`);
         refetch();
     };
 
-    const handleStatusChange = async (id, newStatus) => {
-        await AxiosPublic.patch(`/dashboard/portfolio/${id}`, { status: newStatus });
-        refetch();
+    const handleStatusChange = (id, status) => {
+        AxiosPublic.patch(`/dashboard/portfolio/${id}`, { status: status })
+            .then(res => {
+                if (res.data.modifiedCount > 0) {
+                    Swal.fire({
+                        title: "Status Updated!",
+                        text: `Your Blood Is ${status}`,
+                        icon: "success",
+                    });
+                    refetch();
+                }
+            });
     };
 
     if (isProjectLoading) {
@@ -48,14 +60,14 @@ export default function AdminPortfolio() {
                     Admin Portfolio Dashboard
                 </motion.h1>
 
-                {userRole === "admin" && (
-                    <button
-                        onClick={() => navigate("/dashboard/add-portfolio")}
-                        className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-xl shadow hover:bg-blue-700 transition-all cursor-pointer w-full sm:w-auto"
-                    >
-                        <FaPlus /> Add Project
-                    </button>
-                )}
+
+                <button
+                    onClick={() => navigate("/dashboard/add-portfolio")}
+                    className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-xl shadow hover:bg-blue-700 transition-all cursor-pointer w-full sm:w-auto"
+                >
+                    <FaPlus /> Add Project
+                </button>
+
             </header>
 
             {/* PROJECT TABLE */}
@@ -86,12 +98,12 @@ export default function AdminPortfolio() {
                                 <td className="px-4 sm:px-6 py-4 hidden md:table-cell">{p.details}</td>
                                 <select
                                     value={p.status}
-                                    disabled={userRole !== "admin"}
+                                    disabled={!isAdmin}
                                     onChange={(e) => handleStatusChange(p._id, e.target.value)}
                                     className={`px-3 py-1 rounded-lg border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all ${p.status === "active"
-                                            ? "bg-green-100 text-green-800 border-green-300"
-                                            : "bg-red-100 text-red-700 border-red-300"
-                                        } ${userRole !== "admin" ? "opacity-60 cursor-not-allowed" : ""}`}
+                                        ? "bg-green-100 text-green-800 border-green-300"
+                                        : "bg-red-100 text-red-700 border-red-300"
+                                        } ${!isAdmin ? "opacity-60 cursor-not-allowed" : ""}`}
                                 >
                                     <option value="active">Active</option>
                                     <option value="inactive">Inactive</option>
@@ -99,13 +111,14 @@ export default function AdminPortfolio() {
 
                                 <td className="px-4 sm:px-6 py-4 text-center">
                                     <div className="flex justify-center gap-4 text-lg">
+
                                         <button
                                             className="text-blue-500 hover:text-blue-700"
-                                            onClick={() => alert("Edit functionality coming soon!")}
+                                            onClick={() => navigate("/dashboard/edit-portfolio")}
                                         >
                                             <FaEdit />
                                         </button>
-                                        {userRole === "admin" && (
+                                        {isAdmin && (
                                             <button
                                                 onClick={() => handleDelete(p._id)}
                                                 className="text-red-500 hover:text-red-700"
