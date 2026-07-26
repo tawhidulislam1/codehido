@@ -129,7 +129,7 @@ export default function TeamTable() {
     };
 
     const handleDelete = async (id) => {
-        const sure = confirm("Are you sure you want to delete????");
+        const sure = confirm("Are you sure? you want to delete????");
         if (!sure) return;
 
         await axiosPublic.delete(`/dashboard/team/${id}`);
