@@ -9,21 +9,64 @@ import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 
 import useAdmin from "../../../Hooks/useAdmin";
+import useTableControls from "../../../Hooks/useTableControls";
+import SearchInput from "../../../Commonents/SearchInput";
+import FilterDropdown from "../../../Commonents/FilterDropdown";
+import SortableHeader from "../../../Commonents/SortableHeader";
+import PaginationControls from "../../../Commonents/PaginationControls";
 
 export default function AdminPortfolio() {
-    const [isAdmin] = useAdmin()
+    const [isAdmin] = useAdmin();
     const navigate = useNavigate();
     const AxiosSecure = useAxiosSecure();
-    console.log(isAdmin);
-    const { data: projects = [], isPending: isProjectLoading, refetch } = useQuery({
-        queryKey: ['portfolio'],
+    const {
+        search,
+        setSearch,
+        filterValue,
+        setFilterValue,
+        sort,
+        setSort,
+        page,
+        setPage,
+        limit,
+    } = useTableControls({ defaultLimit: 10 });
+
+    const { data, isPending, isFetching, refetch } = useQuery({
+        queryKey: ["portfolio", search, filterValue, sort, page, limit],
         queryFn: async () => {
-            const res = await AxiosSecure.get('/dashboard/portfolio');
-            return res.data;
+            const res = await AxiosSecure.get("/dashboard/portfolio", {
+                params: {
+                    search: search || undefined,
+                    status: filterValue === "all" ? undefined : filterValue,
+                    sort: sort || undefined,
+                    page,
+                    limit,
+                },
+            });
+
+            return {
+                data: Array.isArray(res.data?.data)
+                    ? res.data.data
+                    : Array.isArray(res.data)
+                        ? res.data
+                        : res.data?.result || [],
+                totalCount: Number(res.data?.totalCount ?? 0),
+                totalPages: Number(res.data?.totalPages ?? 1),
+            };
         },
     });
 
-    console.log(projects);
+    const projects = data?.data ?? [];
+    const totalPages = data?.totalPages ?? 1;
+    const isProjectLoading = isPending || isFetching;
+
+    const toggleSort = (field) => {
+        setSort((current) => {
+            if (current === field) return `-${field}`;
+            if (current === `-${field}`) return "";
+            return field;
+        });
+    };
     const handleDelete = async (id) => {
         if (!isAdmin) return Swal.fire({ title: "Only admin can delete projects!", icon: "error" });
         Swal.fire({
@@ -56,7 +99,7 @@ export default function AdminPortfolio() {
             });
     };
 
-    if (isProjectLoading) {
+    if (isPending && projects.length === 0) {
         return <p className="text-center text-gray-600 py-10">Loading projects...</p>;
     }
 
@@ -82,6 +125,31 @@ export default function AdminPortfolio() {
 
             </header>
 
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end gap-4 mb-6">
+                <SearchInput
+                    value={search}
+                    onChange={setSearch}
+                    placeholder="Search by project title"
+                />
+
+                <FilterDropdown
+                    label="Status"
+                    value={filterValue}
+                    onChange={setFilterValue}
+                    options={[
+                        { value: "all", label: "All" },
+                        { value: "active", label: "Active" },
+                        { value: "inactive", label: "Inactive" },
+                    ]}
+                />
+            </div>
+
+            {isProjectLoading && (
+                <div className="max-w-6xl mx-auto text-sm text-blue-600 font-medium mb-4 animate-pulse">
+                    Refreshing projects...
+                </div>
+            )}
+
             {/* PROJECT TABLE */}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -93,7 +161,14 @@ export default function AdminPortfolio() {
                     <thead className="bg-blue-100 text-blue-900 uppercase text-xs sm:text-sm font-semibold">
                         <tr>
                             <th className="px-4 sm:px-6 py-3">#</th>
-                            <th className="px-4 sm:px-6 py-3">Project Name</th>
+                            <th className="px-4 sm:px-6 py-3">
+                                <SortableHeader
+                                    label="Project Name"
+                                    active={sort === "name" || sort === "-name"}
+                                    direction={sort === "-name" ? "desc" : "asc"}
+                                    onClick={() => toggleSort("name")}
+                                />
+                            </th>
                             <th className="px-4 sm:px-6 py-3 hidden md:table-cell">Developer</th>
                             <th className="px-4 sm:px-6 py-3">Status</th>
                             <th className="px-4 sm:px-6 py-3 text-center">Actions</th>
@@ -160,6 +235,14 @@ export default function AdminPortfolio() {
                     </tbody>
                 </table>
             </motion.div>
+
+            <div className="max-w-6xl mx-auto mt-6">
+                <PaginationControls
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={(nextPage) => setPage(Math.min(Math.max(nextPage, 1), totalPages))}
+                />
+            </div>
         </div>
     );
 }

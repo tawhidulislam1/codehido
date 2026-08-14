@@ -2,29 +2,77 @@ import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import useAuth from "../../../Hooks/useAuth";
-import { FaTrashAlt, FaUserShield, FaUserCircle } from "react-icons/fa";
+import useTableControls from "../../../Hooks/useTableControls";
+import SearchInput from "../../../Commonents/SearchInput";
+import FilterDropdown from "../../../Commonents/FilterDropdown";
+import SortableHeader from "../../../Commonents/SortableHeader";
+import PaginationControls from "../../../Commonents/PaginationControls";
+import { FaTrashAlt, FaUserCircle } from "react-icons/fa";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
 const AllUsers = () => {
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
+    const {
+        search,
+        setSearch,
+        filterValue,
+        setFilterValue,
+        sort,
+        setSort,
+        page,
+        setPage,
+        limit,
+    } = useTableControls({ defaultLimit: 10 });
 
     const {
-        data: users = [],
-        isLoading,
+        data,
+        isPending,
+        isFetching,
         error,
         refetch,
     } = useQuery({
-        queryKey: ["allUsers", user?.email],
+        queryKey: ["allUsers", user?.email, search, filterValue, sort, page, limit],
         enabled: !!user?.email,
         queryFn: async () => {
-            const res = await axiosSecure.get("/user");
-            return Array.isArray(res.data)
-                ? res.data
-                : res.data?.result || res.data?.users || [];
+            const res = await axiosSecure.get("/user", {
+                params: {
+                    search: search || undefined,
+                    role: filterValue === "all" ? undefined : filterValue,
+                    sort: sort || undefined,
+                    page,
+                    limit,
+                },
+            });
+
+            return {
+                data: Array.isArray(res.data?.data)
+                    ? res.data.data
+                    : Array.isArray(res.data)
+                        ? res.data
+                        : res.data?.result || res.data?.users || [],
+                totalCount: Number(res.data?.totalCount ?? res.data?.count ?? 0),
+                totalPages: Number(
+                    res.data?.totalPages ??
+                    Math.max(1, Math.ceil((res.data?.totalCount ?? res.data?.count ?? 0) / limit))
+                ),
+            };
         },
     });
+
+    const users = data?.data ?? [];
+    const totalCount = data?.totalCount ?? 0;
+    const totalPages = data?.totalPages ?? 1;
+    const isLoading = isPending || isFetching;
+
+    const toggleSort = (field) => {
+        setSort((current) => {
+            if (current === field) return `-${field}`;
+            if (current === `-${field}`) return "";
+            return field;
+        });
+    };
 
     const handleRoleChange = (user, newRole) => {
         if (user.role === newRole) return; // safety check
@@ -72,7 +120,7 @@ const AllUsers = () => {
     };
 
     // ========== UI States ==========
-    if (isLoading)
+    if (isPending && users.length === 0)
         return (
             <div className="flex justify-center items-center h-64 text-[#2974FF] font-semibold animate-pulse">
                 Loading users...
@@ -102,14 +150,42 @@ const AllUsers = () => {
             transition={{ duration: 0.4 }}
             className="p-6 sm:p-8 bg-[#F5FAFF] rounded-2xl shadow-xl border border-[#E6F0FF]"
         >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                <h2 className="text-2xl sm:text-3xl font-semibold text-[#0F172A]">
-                    All Users
-                </h2>
-                <p className="text-[#475569] text-sm mt-2 sm:mt-0">
-                    Total Users:{" "}
-                    <span className="font-bold text-[#2974FF]">{users.length}</span>
-                </p>
+            <div className="flex flex-col gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <h2 className="text-2xl sm:text-3xl font-semibold text-[#0F172A]">
+                        All Users
+                    </h2>
+                    <p className="text-[#475569] text-sm mt-2 sm:mt-0">
+                        Total Users:{" "}
+                        <span className="font-bold text-[#2974FF]">{totalCount || users.length}</span>
+                    </p>
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-end gap-4">
+                    <SearchInput
+                        value={search}
+                        onChange={setSearch}
+                        placeholder="Search by name or email"
+                    />
+
+                    <FilterDropdown
+                        label="Role"
+                        value={filterValue}
+                        onChange={setFilterValue}
+                        options={[
+                            { value: "all", label: "All" },
+                            { value: "user", label: "User" },
+                            { value: "admin", label: "Admin" },
+                            { value: "developer", label: "Developer" },
+                        ]}
+                    />
+                </div>
+
+                {isLoading && (
+                    <div className="text-sm text-[#2974FF] font-medium animate-pulse">
+                        Refreshing user list...
+                    </div>
+                )}
             </div>
 
             {/* ======= Desktop Table ======= */}
@@ -118,8 +194,22 @@ const AllUsers = () => {
                     <thead className="bg-[#E6F0FF] text-[#0F172A] uppercase text-xs tracking-wide">
                         <tr>
                             <th className="px-6 py-4">#</th>
-                            <th className="px-6 py-4">User</th>
-                            <th className="px-6 py-4">Email</th>
+                            <th className="px-6 py-4">
+                                <SortableHeader
+                                    label="User"
+                                    active={sort === "name" || sort === "-name"}
+                                    direction={sort === "-name" ? "desc" : "asc"}
+                                    onClick={() => toggleSort("name")}
+                                />
+                            </th>
+                            <th className="px-6 py-4">
+                                <SortableHeader
+                                    label="Email"
+                                    active={sort === "email" || sort === "-email"}
+                                    direction={sort === "-email" ? "desc" : "asc"}
+                                    onClick={() => toggleSort("email")}
+                                />
+                            </th>
                             <th className="px-6 py-4 text-center">Role</th>
                             <th className="px-6 py-4 text-center">Actions</th>
                         </tr>
@@ -215,6 +305,12 @@ const AllUsers = () => {
                     </tbody>
                 </table>
             </div>
+
+            <PaginationControls
+                page={page}
+                totalPages={totalPages}
+                onPageChange={(nextPage) => setPage(Math.min(Math.max(nextPage, 1), totalPages))}
+            />
 
             {/* ======= Mobile Cards ======= */}
             <div className="md:hidden grid gap-4 mt-6">

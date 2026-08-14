@@ -7,19 +7,60 @@ import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import useAdmin from "../../../Hooks/useAdmin";
+import useTableControls from "../../../Hooks/useTableControls";
+import SearchInput from "../../../Commonents/SearchInput";
+import FilterDropdown from "../../../Commonents/FilterDropdown";
+import SortableHeader from "../../../Commonents/SortableHeader";
+import PaginationControls from "../../../Commonents/PaginationControls";
 
 export default function BlogList() {
     const [isAdmin] = useAdmin();
     const navigate = useNavigate();
     const AxiosSecure = useAxiosSecure();
+    const {
+        search,
+        setSearch,
+        filterValue,
+        setFilterValue,
+        sort,
+        setSort,
+        page,
+        setPage,
+        limit,
+    } = useTableControls({ defaultLimit: 10 });
 
-    const { data: blogs = [], isPending: isBlogLoading, refetch } = useQuery({
-        queryKey: ['blogs-dashboard'],
+    const { data, isPending, isFetching, refetch } = useQuery({
+        queryKey: ["blogs-dashboard", search, filterValue, sort, page, limit],
         queryFn: async () => {
-            const res = await AxiosSecure.get('/dashboard/blog');
-            return res.data;
+            const res = await AxiosSecure.get("/dashboard/blog", {
+                params: {
+                    search: search || undefined,
+                    status: filterValue === "all" ? undefined : filterValue,
+                    sort: sort || undefined,
+                    page,
+                    limit,
+                },
+            });
+
+            return {
+                data: Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [],
+                totalCount: Number(res.data?.totalCount ?? 0),
+                totalPages: Number(res.data?.totalPages ?? 1),
+            };
         },
     });
+
+    const blogs = data?.data ?? [];
+    const totalPages = data?.totalPages ?? 1;
+    const isBlogLoading = isPending || isFetching;
+
+    const toggleSort = (field) => {
+        setSort((current) => {
+            if (current === field) return `-${field}`;
+            if (current === `-${field}`) return "";
+            return field;
+        });
+    };
 
     const handleDelete = async (id) => {
         if (!isAdmin) return Swal.fire({ title: "Only admin can delete blogs!", icon: "error" });
@@ -57,7 +98,7 @@ export default function BlogList() {
             });
     };
 
-    if (isBlogLoading) {
+    if (isPending && blogs.length === 0) {
         return <p className="text-center text-gray-600 py-10">Loading blogs...</p>;
     }
 
@@ -80,6 +121,31 @@ export default function BlogList() {
                 </button>
             </header>
 
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end gap-4 mb-6">
+                <SearchInput
+                    value={search}
+                    onChange={setSearch}
+                    placeholder="Search by title"
+                />
+
+                <FilterDropdown
+                    label="Status"
+                    value={filterValue}
+                    onChange={setFilterValue}
+                    options={[
+                        { value: "all", label: "All" },
+                        { value: "published", label: "Published" },
+                        { value: "draft", label: "Draft" },
+                    ]}
+                />
+            </div>
+
+            {isBlogLoading && (
+                <div className="max-w-6xl mx-auto text-sm text-blue-600 font-medium mb-4 animate-pulse">
+                    Refreshing blog list...
+                </div>
+            )}
+
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -90,7 +156,14 @@ export default function BlogList() {
                     <thead className="bg-blue-100 text-blue-900 uppercase text-xs sm:text-sm font-semibold">
                         <tr>
                             <th className="px-4 sm:px-6 py-3">#</th>
-                            <th className="px-4 sm:px-6 py-3">Title</th>
+                            <th className="px-4 sm:px-6 py-3">
+                                <SortableHeader
+                                    label="Title"
+                                    active={sort === "title" || sort === "-title"}
+                                    direction={sort === "-title" ? "desc" : "asc"}
+                                    onClick={() => toggleSort("title")}
+                                />
+                            </th>
                             <th className="px-4 sm:px-6 py-3 hidden md:table-cell">Preview</th>
                             <th className="px-4 sm:px-6 py-3">Status</th>
                             <th className="px-4 sm:px-6 py-3 text-center">Actions</th>
@@ -150,6 +223,14 @@ export default function BlogList() {
                     </tbody>
                 </table>
             </motion.div>
+
+            <div className="max-w-6xl mx-auto mt-6">
+                <PaginationControls
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={(nextPage) => setPage(Math.min(Math.max(nextPage, 1), totalPages))}
+                />
+            </div>
         </div>
     );
 }
