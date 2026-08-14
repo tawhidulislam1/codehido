@@ -2,8 +2,6 @@ import React from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import {
-    LineChart,
-    Line,
     XAxis,
     YAxis,
     Tooltip,
@@ -12,8 +10,9 @@ import {
     Area,
     CartesianGrid,
 } from "recharts";
-import { Bell, Settings, Users, Folder, Activity } from "lucide-react";
 import useAuth from "../../../Hooks/useAuth";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import { useQuery } from "@tanstack/react-query";
 
 // codeHido Dashboard — Updated to use the custom color palette you provided.
 // Palette (CSS variables defined in the component):
@@ -24,13 +23,6 @@ import useAuth from "../../../Hooks/useAuth";
 // --color-text-dark: #0F172A
 // --color-text-medium: #475569
 // --color-border-gray: #CBD5E1
-
-const stats = [
-    { id: 1, title: "Active Projects", value: 12, change: "+8%" },
-    { id: 2, title: "Open Tickets", value: 4, change: "-12%" },
-    { id: 3, title: "Monthly Revenue", value: "$12.4k", change: "+15%" },
-    { id: 4, title: "New Clients", value: 6, change: "+40%" },
-];
 
 const projects = [
     { id: 1, name: "Fama Barber Shop", status: "Design", progress: 40 },
@@ -57,6 +49,31 @@ const chartData = [
 
 export default function Dashboard() {
     const { user } = useAuth();
+    const axiosSecure = useAxiosSecure();
+    const { data: dashboardStats = {}, isPending } = useQuery({
+        queryKey: ['dashboardStats'],
+        queryFn: async () => {
+            const res = await axiosSecure.get('/dashboard/stats');
+            return res.data;
+        },
+    });
+
+    const stats = [
+        { id: 1, title: "Total Users", value: dashboardStats.totalUsers ?? 0, change: "+8%" },
+        { id: 2, title: "Total Portfolio", value: dashboardStats.totalPortfolio ?? 0, change: "+5%" },
+        { id: 3, title: "Active Portfolio", value: dashboardStats.activePortfolio ?? 0, change: "+10%" },
+        { id: 4, title: "Inactive Portfolio", value: dashboardStats.inactivePortfolio ?? 0, change: "-3%" },
+    ];
+
+    if (isPending) {
+        return <div className="flex justify-center items-center h-64 gap-2">
+            <span className="loading loading-ball loading-xs"></span>
+            <span className="loading loading-ball loading-sm"></span>
+            <span className="loading loading-ball loading-md"></span>
+            <span className="loading loading-ball loading-lg"></span>
+        </div>;
+    }
+
     return (
         <div
             className="min-h-screen text-[var(--color-text-dark)]"

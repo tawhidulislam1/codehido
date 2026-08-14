@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { FaTrashAlt, FaUserShield, FaUserCircle } from "react-icons/fa";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
 const AllUsers = () => {
-    const axiosPublic = useAxiosPublic();
+    const axiosSecure = useAxiosSecure();
 
     const {
         data: users = [],
@@ -16,7 +16,7 @@ const AllUsers = () => {
     } = useQuery({
         queryKey: ["allUsers"],
         queryFn: async () => {
-            const res = await axiosPublic.get("/user");
+            const res = await axiosSecure.get("/user");
             return res.data;
         },
     });
@@ -34,7 +34,7 @@ const AllUsers = () => {
             confirmButtonText: "Yes, Change Role!",
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosPublic
+                axiosSecure
                     .patch(`/user/role/${user._id}`, { role: newRole })  // send role in body
                     .then(() => {
                         Swal.fire("Success!", `${user.name} is now ${newRole}.`, "success");
@@ -58,7 +58,7 @@ const AllUsers = () => {
             confirmButtonText: "Yes, Delete!",
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosPublic.delete(`/user/${user._id}`).then(() => {
+                axiosSecure.delete(`/user/${user._id}`).then(() => {
                     Swal.fire("Deleted!", "User has been removed.", "success");
                     refetch();
                 });

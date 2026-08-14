@@ -23,6 +23,8 @@ import EditPortfolio from "../Page/Dashboard/Portfolio/EditProfolio";
 import ViewPortfolio from "../Page/Portfolio/viewPortfolio";
 import TeamTable from "../Page/Dashboard/Teams/TeamList";
 import AddTeamMember from "../Page/Dashboard/Teams/addTeamMember";
+import EditTeamMember from "../Page/Dashboard/Teams/EditTeamMember";
+import Profile from "../Page/Profile/Profile";
 
 const Router = createBrowserRouter([
     {
@@ -110,7 +112,7 @@ const Router = createBrowserRouter([
             {
                 path: 'edit-portfolio/:id',
                 element: <EditPortfolio></EditPortfolio>,
-                loader: ({ params }) => fetch(`http://localhost:5000/dashboard/portfolio/${params.id}`)
+                loader: ({ params }) => fetch(`${import.meta.env.VITE_API_URL}/portfolio/${params.id}`).then(res => res.json())
             },
             //? team page
             {
@@ -120,6 +122,14 @@ const Router = createBrowserRouter([
             {
                 path: 'team/add-member',
                 element: <AddTeamMember />
+            },
+            {
+                path: 'team/edit/:id',
+                element: <EditTeamMember />
+            },
+            {
+                path: 'profile',
+                element: <PrivateRoute><Profile /></PrivateRoute>
             },
 
         ]

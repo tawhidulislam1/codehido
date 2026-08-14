@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
-import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 
@@ -13,26 +13,37 @@ import useAdmin from "../../../Hooks/useAdmin";
 export default function AdminPortfolio() {
     const [isAdmin] = useAdmin()
     const navigate = useNavigate();
-    const AxiosPublic = useAxiosPublic();
+    const AxiosSecure = useAxiosSecure();
     console.log(isAdmin);
     const { data: projects = [], isPending: isProjectLoading, refetch } = useQuery({
         queryKey: ['portfolio'],
         queryFn: async () => {
-            const res = await AxiosPublic.get('/dashboard/portfolio');
+            const res = await AxiosSecure.get('/dashboard/portfolio');
             return res.data;
         },
     });
 
     console.log(projects);
     const handleDelete = async (id) => {
-        if (!isAdmin) return alert("Only admin can delete projects!");
-        if (!confirm("Are you sure you want to delete this project?")) return;
-        await AxiosPublic.delete(`/dashboard/portfolio/${id}`);
-        refetch();
+        if (!isAdmin) return Swal.fire({ title: "Only admin can delete projects!", icon: "error" });
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to delete this project.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#2974FF",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Delete!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await AxiosSecure.delete(`/dashboard/portfolio/${id}`);
+                refetch();
+            }
+        });
     };
 
     const handleStatusChange = (id, status) => {
-        AxiosPublic.patch(`/dashboard/portfolio/${id}`, { status: status })
+        AxiosSecure.patch(`/dashboard/portfolio/${id}`, { status: status })
             .then(res => {
                 if (res.data.modifiedCount > 0) {
                     Swal.fire({

@@ -1,19 +1,38 @@
 import React, { useState } from "react";
 import { FaLinkedin, FaTwitter, FaGithub, FaEnvelope } from "react-icons/fa";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
+import Swal from "sweetalert2";
 
 const Connect = () => {
     const [form, setForm] = useState({ name: "", email: "", message: "" });
     const [success, setSuccess] = useState(false);
+    const axiosPublic = useAxiosPublic();
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(form);
-        setSuccess(true);
-        setForm({ name: "", email: "", message: "" });
+        try {
+            await axiosPublic.post('/contact', form);
+            setSuccess(true);
+            setForm({ name: "", email: "", message: "" });
+            Swal.fire({
+                title: "Message Sent!",
+                text: "Your message has been sent successfully.",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            console.error("Contact form error:", error.message);
+            Swal.fire({
+                title: "Error",
+                text: error.message,
+                icon: "error",
+            });
+        }
     };
 
     return (

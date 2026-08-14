@@ -2,8 +2,9 @@ import React, { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import useAdmin from "../../../Hooks/useAdmin";
+import Swal from "sweetalert2";
 
 export default function AddProject() {
     const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ export default function AddProject() {
     });
     const [isAdmin] = useAdmin()
     console.log(isAdmin);
-    const axiosPublic = useAxiosPublic();
+    const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
 
 
@@ -31,19 +32,24 @@ export default function AddProject() {
         e.preventDefault();
 
         if (!formData.name || !formData.technology || !formData.details) {
-            alert("⚠️ Please fill all required fields!");
+            Swal.fire({ title: "⚠️ Please fill all required fields!", icon: "warning" });
             return;
         }
 
 
         try {
-            const result = await axiosPublic.post("/dashboard/portfolio", payload);
+            const result = await axiosSecure.post("/dashboard/portfolio", payload);
             console.log("✅ New Project Added:", result.data);
-            alert("Project added successfully!");
+            Swal.fire({
+                title: "Project added successfully!",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false,
+            });
             navigate("/dashboard/portfolio");
         } catch (error) {
             console.error("❌ Error adding project:", error);
-            alert("Failed to add project. Please try again.");
+            Swal.fire({ title: "Failed to add project. Please try again.", icon: "error" });
         }
     };
 

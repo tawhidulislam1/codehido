@@ -5,12 +5,14 @@ import { motion } from "framer-motion";
 import useAuth from "../../Hooks/useAuth";
 import Swal from "sweetalert2";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const { logIn, user } = useAuth();
+    const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
     useEffect(() => {
         if (user) {
@@ -22,7 +24,9 @@ const Login = () => {
         e.preventDefault();
 
         logIn(email, password)
-            .then((result) => {
+            .then(async (result) => {
+                const jwtRes = await axiosPublic.post("/jwt", { email });
+                localStorage.setItem('access-token', jwtRes.data.token);
                 Swal.fire({
                     title: "Login Successfully!",
                     icon: "success",

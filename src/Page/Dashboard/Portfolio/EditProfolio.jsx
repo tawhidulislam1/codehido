@@ -2,8 +2,8 @@ import React, { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { useNavigate, useLoaderData } from "react-router-dom";
-import useAxiosPublic from "../../../Hooks/useAxiosPublic";
-;
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 export default function EditPortfolio() {
     // Load existing project data
@@ -22,7 +22,7 @@ export default function EditPortfolio() {
         status: status || 'inactive',
     });
 
-    const axiosPublic = useAxiosPublic();
+    const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
 
     // Merge formData with admin status
@@ -35,18 +35,23 @@ export default function EditPortfolio() {
         e.preventDefault();
 
         if (!formData.name || !formData.technology || !formData.details) {
-            alert("⚠️ Please fill all required fields!");
+            Swal.fire({ title: "⚠️ Please fill all required fields!", icon: "warning" });
             return;
         }
 
         try {
-            const result = await axiosPublic.put(`/dashboard/portfolio/${_id}`, payload);
+            const result = await axiosSecure.put(`/dashboard/portfolio/${_id}`, payload);
             console.log("✅ Project Updated:", result.data);
-            alert("Project updated successfully!");
+            Swal.fire({
+                title: "Project updated successfully!",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false,
+            });
             navigate("/dashboard/portfolio");
         } catch (error) {
             console.error("❌ Error updating project:", error);
-            alert("Failed to update project. Please try again.");
+            Swal.fire({ title: "Failed to update project. Please try again.", icon: "error" });
         }
     };
 

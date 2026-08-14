@@ -18,7 +18,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { useNavigate } from "react-router-dom";
 import { FaPlus, FaEdit, FaTrash, FaGripVertical } from "react-icons/fa";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
 // ------------------- ROW COMPONENT -------------------
 function Row({ member, onDelete, navigate }) {
@@ -82,6 +84,7 @@ function Row({ member, onDelete, navigate }) {
 export default function TeamTable() {
     const navigate = useNavigate();
     const axiosPublic = useAxiosPublic();
+    const axiosSecure = useAxiosSecure();
 
     const { data: members = [], refetch } = useQuery({
         queryKey: ["team"],
@@ -119,7 +122,7 @@ export default function TeamTable() {
 
             // Save new order to backend
             try {
-                await axiosPublic.patch("/dashboard/team/reorder", {
+                await axiosSecure.patch("/dashboard/team/reorder", {
                     newOrder: updated.map((m) => m._id),
                 });
             } catch (err) {
@@ -129,10 +132,18 @@ export default function TeamTable() {
     };
 
     const handleDelete = async (id) => {
-        const sure = confirm("Are you sure? you want to delete????");
-        if (!sure) return;
+        const sure = await Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to delete this team member.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#2974FF",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Delete!",
+        });
+        if (!sure.isConfirmed) return;
 
-        await axiosPublic.delete(`/dashboard/team/${id}`);
+        await axiosSecure.delete(`/dashboard/team/${id}`);
         refetch();
     };
 

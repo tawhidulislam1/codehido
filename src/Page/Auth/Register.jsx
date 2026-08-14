@@ -53,6 +53,8 @@ const Register = () => {
         // Step 4: Save user info to your backend (optional)
         const userInfo = { name, email, photoURL, role };
         await axiosPublic.post("/user", userInfo);
+        const jwtRes = await axiosPublic.post("/jwt", { email });
+        localStorage.setItem('access-token', jwtRes.data.token);
 
         // Step 5: Success message
         Swal.fire({
