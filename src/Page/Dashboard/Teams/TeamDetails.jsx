@@ -1,3 +1,4 @@
+import { UserCircle2 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
@@ -14,6 +15,20 @@ const normalizeTeamMember = (data) => {
     return data;
 };
 
+const getTeamMemberImage = (member) => {
+    if (!member || typeof member !== "object") return "";
+
+    return (
+        member.image ||
+        member.photo ||
+        member.avatar ||
+        member.avatarUrl ||
+        member.profileImage ||
+        member.imageUrl ||
+        ""
+    );
+};
+
 export default function TeamMemberDetailsDashboard() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -28,7 +43,10 @@ export default function TeamMemberDetailsDashboard() {
         enabled: !!id,
     });
 
+    const image = getTeamMemberImage(data);
+
     if (isPending) return <DetailsPageSkeleton />;
+
     if (error || !data || Object.keys(data).length === 0) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
@@ -51,7 +69,7 @@ export default function TeamMemberDetailsDashboard() {
         <AdminDetailsLayout
             title={data.name || "Team Member"}
             subtitle={data.role || "Team member"}
-            image={data.image}
+            image={image || undefined}
             backTo="/dashboard/team"
             backLabel="Back to team"
             actions={[
@@ -67,16 +85,61 @@ export default function TeamMemberDetailsDashboard() {
                     <DetailsField label="Name" value={data.name} />
                     <DetailsField label="Role" value={data.role} />
                     <DetailsField label="Email" value={data.email} />
-                    <DetailsField label="LinkedIn" value={data.linkedin ? <a href={data.linkedin} target="_blank" rel="noreferrer" className="text-blue-600 underline">Open profile</a> : null} />
+                    <DetailsField
+                        label="LinkedIn"
+                        value={
+                            data.linkedin ? (
+                                <a href={data.linkedin} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                                    Open profile
+                                </a>
+                            ) : null
+                        }
+                    />
                 </div>
 
                 <DetailsSection title="Social profiles">
                     <div className="grid gap-4 md:grid-cols-3">
-                        <DetailsField label="Facebook" value={data.facebook ? <a href={data.facebook} target="_blank" rel="noreferrer" className="text-blue-600 underline">Facebook</a> : null} />
-                        <DetailsField label="Twitter" value={data.twitter ? <a href={data.twitter} target="_blank" rel="noreferrer" className="text-blue-600 underline">Twitter</a> : null} />
-                        <DetailsField label="LinkedIn" value={data.linkedin ? <a href={data.linkedin} target="_blank" rel="noreferrer" className="text-blue-600 underline">LinkedIn</a> : null} />
+                        <DetailsField
+                            label="Facebook"
+                            value={
+                                data.facebook ? (
+                                    <a href={data.facebook} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                                        Facebook
+                                    </a>
+                                ) : null
+                            }
+                        />
+                        <DetailsField
+                            label="Twitter"
+                            value={
+                                data.twitter ? (
+                                    <a href={data.twitter} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                                        Twitter
+                                    </a>
+                                ) : null
+                            }
+                        />
+                        <DetailsField
+                            label="LinkedIn"
+                            value={
+                                data.linkedin ? (
+                                    <a href={data.linkedin} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                                        LinkedIn
+                                    </a>
+                                ) : null
+                            }
+                        />
                     </div>
                 </DetailsSection>
+
+                {!image && (
+                    <div className="flex items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-10 text-slate-500">
+                        <div className="flex items-center gap-3 text-sm font-medium">
+                            <UserCircle2 className="h-5 w-5" />
+                            No profile image available
+                        </div>
+                    </div>
+                )}
             </div>
         </AdminDetailsLayout>
     );

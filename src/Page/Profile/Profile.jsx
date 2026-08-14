@@ -98,14 +98,16 @@ const Profile = () => {
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm mb-1 sm:mb-2" style={{ color: "#475569" }}>
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <label className="mb-3 block text-sm font-medium" style={{ color: "#475569" }}>
                             Profile Photo
                         </label>
-                        <ImageUpload
-                            existingImageUrl={photoURL}
-                            onUploaded={(url) => setPhotoURL(url)}
-                        />
+                        <div className="flex justify-center">
+                            <ImageUpload
+                                existingImageUrl={photoURL}
+                                onUploaded={(url) => setPhotoURL(url)}
+                            />
+                        </div>
                     </div>
 
                     <motion.button
