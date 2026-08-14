@@ -1,3 +1,5 @@
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +17,12 @@ export default function AdminDetailsLayout({
 
     return (
         <div className="min-h-screen bg-[#edf4ff] p-4 sm:p-8">
-            <div className="mx-auto max-w-6xl">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35 }}
+                className="mx-auto max-w-6xl"
+            >
                 <div className="mb-5 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                     <button
                         type="button"
@@ -49,16 +56,12 @@ export default function AdminDetailsLayout({
 
                 <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_20px_45px_rgba(15,23,42,0.08)]">
                     {image && (
-                        <div className="px-3 pt-5 sm:px-5 sm:pt-6">
-                            <div className="mx-auto flex w-full max-w-[220px] items-center justify-center">
-                                <div className="overflow-hidden rounded-full border-[5px] border-white bg-slate-100 shadow-[0_18px_38px_rgba(15,23,42,0.18)] ring-1 ring-slate-200">
-                                    <img
-                                        src={image}
-                                        alt={title}
-                                        className="h-[190px] w-[190px] object-cover object-center sm:h-[220px] sm:w-[220px]"
-                                    />
-                                </div>
-                            </div>
+                        <div className="border-b border-slate-200 bg-slate-100 p-3 sm:p-4">
+                            <img
+                                src={image}
+                                alt={title}
+                                className="h-[280px] w-full rounded-[22px] object-cover shadow-sm sm:h-[420px]"
+                            />
                         </div>
                     )}
 
@@ -90,7 +93,7 @@ export default function AdminDetailsLayout({
                         {children}
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }

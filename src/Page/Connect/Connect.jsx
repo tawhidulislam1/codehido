@@ -69,6 +69,15 @@ const Connect = () => {
                             placeholder="Your Email"
                             className="w-full p-5 rounded-xl border border-[#CBD5E1] focus:outline-none focus:ring-2 focus:ring-[#2974FF] transition-all"
                         />
+                        <input
+                            type="text"
+                            name="subject"
+                            value={form.subject}
+                            onChange={handleChange}
+                            required
+                            placeholder="Subject"
+                            className="w-full p-5 rounded-xl border border-[#CBD5E1] focus:outline-none focus:ring-2 focus:ring-[#2974FF] transition-all"
+                        />
 
                         <textarea
                             name="message"

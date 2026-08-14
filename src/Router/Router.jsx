@@ -44,6 +44,8 @@ import ServiceDetails from "../Page/Dashboard/Services/ServiceDetails";
 import TeamMemberDetailsDashboard from "../Page/Dashboard/Teams/TeamDetails";
 import ReviewDetails from "../Page/Dashboard/Reviews/ReviewDetails";
 import DonationRequestDetails from "../Page/Dashboard/Donation/DonationRequestDetails";
+import ContactList from "../Page/Dashboard/Contact/ContactList";
+import ContactDetails from "../Page/Dashboard/Contact/ContactDetails";
 
 const Router = createBrowserRouter([
     {
@@ -227,6 +229,14 @@ const Router = createBrowserRouter([
             {
                 path: 'reviews/:id',
                 element: <AdminRoute><ReviewDetails /></AdminRoute>
+            },
+            {
+                path: 'contact',
+                element: <ContactList />
+            },
+            {
+                path: 'contact/:id',
+                element: <AdminRoute><ContactDetails /></AdminRoute>
             },
             {
                 path: 'profile',

@@ -10,6 +10,7 @@ import {
   FaUserCircle,
   FaSearch,
   FaAd,
+  FaEnvelope,
 } from "react-icons/fa";
 import {
   MdMenu,
@@ -153,6 +154,11 @@ const DashboardLayout = () => {
                 <li>
                   <NavLink to="/dashboard/users" className={navLinkClass}>
                     <FaUsers /> Manage Users
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/contact" className={navLinkClass}>
+                    <FaEnvelope /> Contact
                   </NavLink>
                 </li>
                 <li>
