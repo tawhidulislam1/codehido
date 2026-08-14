@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import ImageUpload from "../../../Commonents/ImageUpload";
 
 export default function AddBlog() {
     const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function AddBlog() {
         coverImage: "",
         status: "draft",
     });
+    const [coverImageUrl, setCoverImageUrl] = useState("");
 
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
@@ -24,7 +26,11 @@ export default function AddBlog() {
         }
 
         try {
-            const result = await axiosSecure.post("/dashboard/blog", formData);
+            const payload = {
+                ...formData,
+                coverImage: coverImageUrl || formData.coverImage,
+            };
+            const result = await axiosSecure.post("/dashboard/blog", payload);
             console.log("✅ Blog Added:", result.data);
             Swal.fire({
                 title: "Blog added successfully!",
@@ -66,15 +72,9 @@ export default function AddBlog() {
 
                     <div>
                         <label className="block font-medium text-gray-700 mb-1">
-                            Cover Image (URL)
+                            Cover Image
                         </label>
-                        <input
-                            type="text"
-                            placeholder="Paste cover image URL"
-                            value={formData.coverImage}
-                            onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-                        />
+                        <ImageUpload onUploaded={setCoverImageUrl} />
                     </div>
 
                     <div>

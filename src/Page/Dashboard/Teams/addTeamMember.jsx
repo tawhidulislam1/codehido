@@ -1,30 +1,43 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-import useAxiosPublic from "../../../Hooks/useAxiosPublic";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { useNavigate } from "react-router-dom";
+import ImageUpload from "../../../Commonents/ImageUpload";
 
 export default function AddTeamMember() {
     const { register, handleSubmit, reset } = useForm();
-    const AxiosPublic = useAxiosPublic();
-    const navigate = useNavigate()
-    
+    const axiosSecure = useAxiosSecure();
+    const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [imageUrl, setImageUrl] = useState("");
 
     const onSubmit = async (data) => {
         try {
+            setIsSubmitting(true);
+
+            if (!imageUrl) {
+                Swal.fire({
+                    title: "Please upload a team member image.",
+                    icon: "warning",
+                });
+                setIsSubmitting(false);
+                return;
+            }
+
             const payload = {
                 name: data.name,
                 role: data.role,
-                image: data.image,
+                image: imageUrl,
                 details: data.details,
                 facebook: data.facebook,
                 twitter: data.twitter,
                 linkedin: data.linkedin,
             };
 
-            const res = await AxiosPublic.post("/dashboard/team", payload);
-            // console.log(payload);
+            const res = await axiosSecure.post("/dashboard/team", payload);
 
-            if (res.data.insertedId) {
+            if (res.data._id) {
                 Swal.fire({
                     title: "Success!",
                     text: "Team Member Added Successfully.",
@@ -32,21 +45,23 @@ export default function AddTeamMember() {
                     timer: 1500,
                 });
                 reset();
-                navigate(-1)
-
+                setImageUrl("");
+                navigate(-1);
             }
         } catch (err) {
-            console.log(err);
+            console.error("Add Team Member Error:", err.message);
             Swal.fire({
                 title: "Error",
-                text: "Something went wrong!",
+                text: err.message || "Something went wrong!",
                 icon: "error",
             });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="w-full flex justify-center py-10">
+        <div className="w-full flex justify-center items-start">
             <div className="bg-white shadow-lg p-8 rounded-xl w-full max-w-xl border border-gray-200">
 
                 <h2 className="text-2xl font-bold text-center mb-6 text-gray-700">
@@ -77,17 +92,11 @@ export default function AddTeamMember() {
                         />
                     </div>
 
-                    {/* Image URL */}
                     <div>
                         <label className="block text-gray-700 font-medium mb-1">
-                            Image URL
+                            Team Member Image
                         </label>
-                        <input
-                            type="text"
-                            {...register("image", { required: true })}
-                            placeholder="https://example.com/photo.jpg"
-                            className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
-                        />
+                        <ImageUpload onUploaded={setImageUrl} />
                     </div>
                     {/* details */}
                     <div>
@@ -146,9 +155,10 @@ export default function AddTeamMember() {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer"
+                        disabled={isSubmitting}
+                        className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        Add Member
+                        {isSubmitting ? "Uploading..." : "Add Member"}
                     </button>
                 </form>
             </div>

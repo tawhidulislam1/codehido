@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import useAdmin from "../../../Hooks/useAdmin";
 import Swal from "sweetalert2";
+import ImageUpload from "../../../Commonents/ImageUpload";
 
 export default function AddProject() {
     const [formData, setFormData] = useState({
@@ -18,14 +19,15 @@ export default function AddProject() {
         details: "",
         status: 'inActive',
     });
-    const [isAdmin] = useAdmin()
-    console.log(isAdmin);
+    const [imageUrl, setImageUrl] = useState("");
+    const [isAdmin] = useAdmin();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
 
 
     const payload = {
         ...formData,
+        image: imageUrl,
         status: isAdmin ? 'active' : 'inactive',
     };
     const handleSubmit = async (e) => {
@@ -107,18 +109,11 @@ export default function AddProject() {
                         />
                     </div>
 
-                    {/* Project Image */}
                     <div>
                         <label className="block font-medium text-gray-700 mb-1">
-                            Project Image (URL)
+                            Project Image
                         </label>
-                        <input
-                            type="text"
-                            placeholder="Paste image URL"
-                            value={formData.image}
-                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-                        />
+                        <ImageUpload onUploaded={setImageUrl} />
                     </div>
 
                     {/* GitHub Link */}

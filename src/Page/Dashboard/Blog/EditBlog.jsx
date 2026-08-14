@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLoaderData } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import ImageUpload from "../../../Commonents/ImageUpload";
 
 export default function EditBlog() {
     const { _id, title, content, coverImage, status } = useLoaderData();
@@ -12,6 +13,7 @@ export default function EditBlog() {
         coverImage: coverImage || "",
         status: status || "draft",
     });
+    const [coverImageUrl, setCoverImageUrl] = useState(coverImage || "");
 
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
@@ -25,7 +27,11 @@ export default function EditBlog() {
         }
 
         try {
-            const result = await axiosSecure.put(`/dashboard/blog/${_id}`, formData);
+            const payload = {
+                ...formData,
+                coverImage: coverImageUrl || formData.coverImage,
+            };
+            const result = await axiosSecure.put(`/dashboard/blog/${_id}`, payload);
             console.log("✅ Blog Updated:", result.data);
             Swal.fire({
                 title: "Blog updated successfully!",
@@ -63,18 +69,15 @@ export default function EditBlog() {
                             className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                         />
 
-                        <input
-                            type="text"
-                            placeholder="Cover Image URL"
-                            value={formData.coverImage}
-                            onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+                        <ImageUpload
+                            existingImageUrl={coverImageUrl || formData.coverImage}
+                            onUploaded={setCoverImageUrl}
                         />
 
-                        {formData.coverImage && (
+                        {(coverImageUrl || formData.coverImage) && (
                             <div className="mt-2">
                                 <img
-                                    src={formData.coverImage}
+                                    src={coverImageUrl || formData.coverImage}
                                     alt="Preview"
                                     className="w-full h-48 object-cover rounded-lg border"
                                 />

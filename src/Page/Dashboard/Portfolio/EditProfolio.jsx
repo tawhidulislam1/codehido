@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate, useLoaderData } from "react-router-dom";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import ImageUpload from "../../../Commonents/ImageUpload";
 
 export default function EditPortfolio() {
     // Load existing project data
@@ -21,6 +22,7 @@ export default function EditPortfolio() {
         details: details || "",
         status: status || 'inactive',
     });
+    const [imageUrl, setImageUrl] = useState(image || "");
 
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
@@ -28,6 +30,7 @@ export default function EditPortfolio() {
     // Merge formData with admin status
     const payload = {
         ...formData,
+        image: imageUrl || formData.image,
     };
 
     // Handle form submit for editing
@@ -125,18 +128,15 @@ export default function EditPortfolio() {
                             className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                         />
 
-                        <input
-                            type="text"
-                            placeholder="Project Image URL"
-                            value={formData.image}
-                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+                        <ImageUpload
+                            existingImageUrl={imageUrl || formData.image}
+                            onUploaded={setImageUrl}
                         />
 
-                        {formData.image && (
+                        {(imageUrl || formData.image) && (
                             <div className="mt-2">
                                 <img
-                                    src={formData.image}
+                                    src={imageUrl || formData.image}
                                     alt="Preview"
                                     className="w-full h-48 object-cover rounded-lg border"
                                 />

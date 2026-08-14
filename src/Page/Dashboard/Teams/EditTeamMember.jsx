@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import ImageUpload from "../../../Commonents/ImageUpload";
 
 export default function EditTeamMember() {
     const { id } = useParams();
@@ -11,11 +12,14 @@ export default function EditTeamMember() {
     const axiosPublic = useAxiosPublic();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [imageUrl, setImageUrl] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
             const res = await axiosPublic.get(`/dashboard/team/${id}`);
             reset(res.data);
+            setImageUrl(res.data.image || "");
         };
 
         fetchData();
@@ -23,10 +27,12 @@ export default function EditTeamMember() {
 
     const onSubmit = async (data) => {
         try {
+            setIsSubmitting(true);
+
             const payload = {
                 name: data.name,
                 role: data.role,
-                image: data.image,
+                image: imageUrl || "",
                 details: data.details,
                 facebook: data.facebook,
                 twitter: data.twitter,
@@ -45,12 +51,14 @@ export default function EditTeamMember() {
                 navigate("/dashboard/team");
             }
         } catch (err) {
-            console.log(err);
+            console.error("Edit Team Member Error:", err.message);
             Swal.fire({
                 title: "Error",
-                text: "Something went wrong!",
+                text: err.message || "Something went wrong!",
                 icon: "error",
             });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -84,13 +92,11 @@ export default function EditTeamMember() {
 
                     <div>
                         <label className="block text-gray-700 font-medium mb-1">
-                            Image URL
+                            Team Member Image
                         </label>
-                        <input
-                            type="text"
-                            {...register("image", { required: true })}
-                            placeholder="https://example.com/photo.jpg"
-                            className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
+                        <ImageUpload
+                            existingImageUrl={imageUrl}
+                            onUploaded={setImageUrl}
                         />
                     </div>
 
@@ -146,9 +152,10 @@ export default function EditTeamMember() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer"
+                        disabled={isSubmitting}
+                        className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        Update Member
+                        {isSubmitting ? "Updating..." : "Update Member"}
                     </button>
                 </form>
             </div>

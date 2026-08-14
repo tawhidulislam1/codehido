@@ -80,7 +80,6 @@ const DashboardLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-[#E6F0FF] text-[#0F172A] overflow-hidden">
-      {/* Sidebar */}
       <AnimatePresence>
         {(isSidebarOpen || isDesktop) && (
           <motion.aside
@@ -89,9 +88,8 @@ const DashboardLayout = () => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -250, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed lg:static z-40 w-64 h-full bg-gradient-to-b from-[#2974FF] to-[#1558D6] text-white flex flex-col shadow-2xl"
+            className="fixed lg:static z-40 w-64 bg-gradient-to-b from-[#2974FF] to-[#1558D6] text-white flex flex-col shadow-2xl"
           >
-            {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[#F5FAFF]/20">
               <h2 className="text-2xl font-bold tracking-wide flex items-center gap-2">
                 <BiSolidDashboard /> Admin Panel
@@ -106,7 +104,6 @@ const DashboardLayout = () => {
               )}
             </div>
 
-            {/* Navigation */}
             <nav className="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">
               <ul className="space-y-2 text-sm">
                 <li>
@@ -150,10 +147,7 @@ const DashboardLayout = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    to="/dashboard/content"
-                    className={navLinkClass}
-                  >
+                  <NavLink to="/dashboard/content" className={navLinkClass}>
                     <BiBookContent /> Content Management
                   </NavLink>
                 </li>
@@ -209,9 +203,7 @@ const DashboardLayout = () => {
         )}
       </AnimatePresence>
 
-      {/* Content Area */}
       <div className="flex-1 flex flex-col min-h-screen transition-all duration-300">
-        {/* Mobile Topbar */}
         {!isDesktop && (
           <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-[#2974FF] text-white px-4 py-3 shadow-lg z-30">
             <button onClick={toggleSidebar}>
@@ -222,8 +214,7 @@ const DashboardLayout = () => {
           </div>
         )}
 
-        {/* Main Content */}
-        <main className="flex-1 p-4 sm:p-6 md:p-10 mt-14 lg:mt-0 bg-[#F5FAFF] rounded-t-3xl shadow-inner overflow-auto">
+        <main className="flex-1 p-4 sm:p-6 md:p-10 mt-14 lg:mt-0 bg-[#F5FAFF] rounded-t-3xl shadow-inner">
           <Outlet />
         </main>
       </div>
