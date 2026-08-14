@@ -3,6 +3,7 @@ import {
     DndContext,
     closestCenter,
     PointerSensor,
+    useDroppable,
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
@@ -21,6 +22,7 @@ import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import ViewDetailsButton from "../../../Commonents/ViewDetailsButton";
 
 // ------------------- ROW COMPONENT -------------------
 function Row({ member, onDelete, navigate }) {
@@ -63,6 +65,7 @@ function Row({ member, onDelete, navigate }) {
 
             {/* RIGHT: Actions */}
             <div className="flex items-center gap-4 text-lg">
+                <ViewDetailsButton to={`/dashboard/team/${member._id}`} className="px-2 py-1 text-xs" />
                 <button
                     onClick={() => navigate(`/dashboard/team/edit/${member._id}`)}
                     className="text-blue-600 hover:text-blue-800"
@@ -76,6 +79,24 @@ function Row({ member, onDelete, navigate }) {
                     <FaTrash />
                 </button>
             </div>
+        </div>
+    );
+}
+
+function DeleteDropZone() {
+    const { isOver, setNodeRef } = useDroppable({ id: "team-delete-zone" });
+
+    return (
+        <div
+            ref={setNodeRef}
+            className={`mt-6 border-2 border-dashed rounded-2xl px-5 py-4 flex items-center justify-center gap-3 text-sm font-medium transition-all ${
+                isOver
+                    ? "border-red-500 bg-red-100 text-red-700 scale-[1.02]"
+                    : "border-red-200 bg-red-50 text-red-500"
+            }`}
+        >
+            <FaTrash className="text-base" />
+            <span>Drag here to remove member</span>
         </div>
     );
 }
@@ -120,16 +141,23 @@ export default function TeamTable() {
     const handleDragEnd = async (event) => {
         const { active, over } = event;
         if (!over) return;
+
+        if (over.id === "team-delete-zone") {
+            await handleDelete(active.id);
+            return;
+        }
+
         if (active.id !== over.id) {
             const oldIndex = membersList.findIndex((i) => i._id === active.id);
             const newIndex = membersList.findIndex((i) => i._id === over.id);
+
+            if (oldIndex === -1 || newIndex === -1) return;
 
             const newOrder = arrayMove(membersList, oldIndex, newIndex);
             const updated = newOrder.map((m, i) => ({ ...m, sl: i + 1 }));
 
             setMembersList(updated);
 
-            // Save new order to backend
             try {
                 await axiosSecure.patch("/dashboard/team/reorder", {
                     newOrder: updated.map((m) => m._id),
@@ -152,8 +180,17 @@ export default function TeamTable() {
         });
         if (!sure.isConfirmed) return;
 
-        await axiosSecure.delete(`/dashboard/team/${id}`);
-        refetch();
+        try {
+            await axiosSecure.delete(`/dashboard/team/${id}`);
+            setMembersList((current) => current.filter((member) => member._id !== id));
+            await refetch();
+        } catch (error) {
+            Swal.fire({
+                title: "Deletion failed",
+                text: error?.response?.data?.message || "Could not delete this team member.",
+                icon: "error",
+            });
+        }
     };
 
     if (isLoading) {
@@ -217,6 +254,7 @@ export default function TeamTable() {
                         <Row key={member._id} member={member} onDelete={handleDelete} navigate={navigate} />
                     ))}
                 </SortableContext>
+                <DeleteDropZone />
             </DndContext>
         </div>
     );

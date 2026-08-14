@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FaStar, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import ViewDetailsButton from "../../../Commonents/ViewDetailsButton";
 
 const normalizeReviews = (data) => {
     if (Array.isArray(data)) return data;
@@ -157,13 +158,16 @@ const ReviewList = () => {
                                     </select>
                                 </td>
                                 <td className="px-6 py-4 text-center">
-                                    <button
-                                        onClick={() => handleDelete(review._id, review.name)}
-                                        className="text-red-500 hover:text-red-700 transition-transform hover:scale-110"
-                                        title="Delete Review"
-                                    >
-                                        <FaTrashAlt size={18} />
-                                    </button>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <ViewDetailsButton to={`/dashboard/reviews/${review._id}`} className="px-2 py-1 text-[10px]" />
+                                        <button
+                                            onClick={() => handleDelete(review._id, review.name)}
+                                            className="text-red-500 hover:text-red-700 transition-transform hover:scale-110"
+                                            title="Delete Review"
+                                        >
+                                            <FaTrashAlt size={18} />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

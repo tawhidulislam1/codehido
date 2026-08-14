@@ -37,6 +37,13 @@ import BlogDetails from "../Page/Blog/BlogDetails";
 import Donation from "../Page/Donation/Donation";
 import ContentManagement from "../Page/Dashboard/Content/ContentManagement";
 import DonationRequests from "../Page/Dashboard/Donation/DonationRequests";
+import PortfolioDetails from "../Page/Dashboard/Portfolio/PortfolioDetails";
+import BlogDetailsDashboard from "../Page/Dashboard/Blog/BlogDetails";
+import UserDetails from "../Page/Dashboard/allUser/UserDetails";
+import ServiceDetails from "../Page/Dashboard/Services/ServiceDetails";
+import TeamMemberDetailsDashboard from "../Page/Dashboard/Teams/TeamDetails";
+import ReviewDetails from "../Page/Dashboard/Reviews/ReviewDetails";
+import DonationRequestDetails from "../Page/Dashboard/Donation/DonationRequestDetails";
 
 const Router = createBrowserRouter([
     {
@@ -126,12 +133,20 @@ const Router = createBrowserRouter([
                 element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
             },
             {
+                path: 'users/:id',
+                element: <AdminRoute><UserDetails /></AdminRoute>
+            },
+            {
                 path: 'dashboard',
                 element: <Dashboard></Dashboard>
             },
             {
                 path: 'portfolio',
                 element: <AdminPortfolio></AdminPortfolio>
+            },
+            {
+                path: 'portfolio/:id',
+                element: <AdminRoute><PortfolioDetails /></AdminRoute>
             },
             {
                 path: 'add-portfolio',
@@ -147,6 +162,10 @@ const Router = createBrowserRouter([
                 element: <Services />
             },
             {
+                path: 'service/:id',
+                element: <AdminRoute><ServiceDetails /></AdminRoute>
+            },
+            {
                 path: 'add-service',
                 element: <AddService />
             },
@@ -158,6 +177,10 @@ const Router = createBrowserRouter([
             {
                 path: 'blog',
                 element: <BlogList />
+            },
+            {
+                path: 'blog/:id',
+                element: <AdminRoute><BlogDetailsDashboard /></AdminRoute>
             },
             {
                 path: 'add-blog',
@@ -172,6 +195,10 @@ const Router = createBrowserRouter([
             {
                 path: 'team',
                 element: <TeamTable></TeamTable>,
+            },
+            {
+                path: 'team/:id',
+                element: <AdminRoute><TeamMemberDetailsDashboard /></AdminRoute>
             },
             {
                 path: 'team/add-member',
@@ -190,8 +217,16 @@ const Router = createBrowserRouter([
                 element: <DonationRequests />
             },
             {
+                path: 'donation-request/:id',
+                element: <AdminRoute><DonationRequestDetails /></AdminRoute>
+            },
+            {
                 path: 'reviews',
                 element: <ReviewList />
+            },
+            {
+                path: 'reviews/:id',
+                element: <AdminRoute><ReviewDetails /></AdminRoute>
             },
             {
                 path: 'profile',

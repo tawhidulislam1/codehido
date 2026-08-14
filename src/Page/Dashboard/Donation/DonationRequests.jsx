@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { FaTrashAlt, FaCheck, FaTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import ViewDetailsButton from "../../../Commonents/ViewDetailsButton";
 
 const normalizeDonationRequests = (data) => {
   if (Array.isArray(data)) return data;
@@ -144,6 +145,7 @@ const DonationRequests = () => {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex justify-center gap-3">
+                      <ViewDetailsButton to={`/dashboard/donation-request/${request._id}`} className="px-2 py-1 text-[10px]" />
                       <button
                         onClick={() => handleStatusChange(request._id, "approved")}
                         className="text-green-600 hover:text-green-800 transition-transform hover:scale-110"

@@ -1,14 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import useAuth from "../../Hooks/useAuth";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import ImageUpload from "../../Commonents/ImageUpload";
 
 const Profile = () => {
     const { user, updateUser } = useAuth();
     const axiosSecure = useAxiosSecure();
     const [name, setName] = useState(user?.displayName || "");
     const [photoURL, setPhotoURL] = useState(user?.photoURL || "");
+
+    useEffect(() => {
+        setName(user?.displayName || "");
+        setPhotoURL(user?.photoURL || "");
+    }, [user]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -93,15 +100,11 @@ const Profile = () => {
 
                     <div>
                         <label className="block text-sm mb-1 sm:mb-2" style={{ color: "#475569" }}>
-                            Photo URL
+                            Profile Photo
                         </label>
-                        <motion.input
-                            whileFocus={{ scale: 1.02 }}
-                            type="text"
-                            value={photoURL}
-                            onChange={(e) => setPhotoURL(e.target.value)}
-                            className="w-full px-4 sm:px-5 py-2.5 sm:py-3 border rounded-xl focus:outline-none transition text-sm sm:text-base"
-                            style={{ borderColor: "#CBD5E1", color: "#0F172A" }}
+                        <ImageUpload
+                            existingImageUrl={photoURL}
+                            onUploaded={(url) => setPhotoURL(url)}
                         />
                     </div>
 

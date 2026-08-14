@@ -28,6 +28,7 @@ import SearchInput from "../../../Commonents/SearchInput";
 import FilterDropdown from "../../../Commonents/FilterDropdown";
 import SortableHeader from "../../../Commonents/SortableHeader";
 import PaginationControls from "../../../Commonents/PaginationControls";
+import AdminActionsDropdown from "../../../Commonents/AdminActionsDropdown";
 
 function SortableProjectRow({ project, index, isAdmin, handleDelete, navigate, handleStatusChange }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: project._id });
@@ -75,30 +76,26 @@ function SortableProjectRow({ project, index, isAdmin, handleDelete, navigate, h
                 </select>
             </td>
             <td className="px-4 sm:px-6 py-4 text-center">
-                <div className="flex justify-center gap-4 text-lg">
-                    <button
-                        className="text-green-500 cursor-pointer hover:text-green-700"
-                        onClick={() => navigate(`/portfolio/${project._id}`)}
-                    >
-                        <FaEye />
-                    </button>
-
-                    <button
-                        className="text-blue-500 cursor-pointer hover:text-blue-700"
-                        onClick={() => navigate(`/dashboard/edit-portfolio/${project._id}`)}
-                    >
-                        <FaEdit />
-                    </button>
-
-                    {isAdmin && (
-                        <button
-                            onClick={() => handleDelete(project._id)}
-                            className="text-red-500 cursor-pointer hover:text-red-700"
-                        >
-                            <FaTrash />
-                        </button>
-                    )}
-                </div>
+                <AdminActionsDropdown
+                    actions={[
+                        {
+                            key: "view",
+                            label: "View Details",
+                            onClick: () => navigate(`/dashboard/portfolio/${project._id}`),
+                        },
+                        {
+                            key: "edit",
+                            label: "Edit",
+                            onClick: () => navigate(`/dashboard/edit-portfolio/${project._id}`),
+                        },
+                        ...(isAdmin
+                            ? [
+                                { type: "divider" },
+                                { key: "delete", label: "Delete", danger: true, onClick: () => handleDelete(project._id) },
+                            ]
+                            : []),
+                    ]}
+                />
             </td>
         </tr>
     );

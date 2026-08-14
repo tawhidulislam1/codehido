@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
@@ -7,13 +8,17 @@ import SearchInput from "../../../Commonents/SearchInput";
 import FilterDropdown from "../../../Commonents/FilterDropdown";
 import SortableHeader from "../../../Commonents/SortableHeader";
 import PaginationControls from "../../../Commonents/PaginationControls";
+import ViewDetailsButton from "../../../Commonents/ViewDetailsButton";
 import { FaTrashAlt, FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
 const AllUsers = () => {
     const axiosSecure = useAxiosSecure();
+    const navigate = useNavigate();
     const { user } = useAuth();
+    const [updatingUserId, setUpdatingUserId] = useState(null);
     const {
         search,
         setSearch,
@@ -75,7 +80,7 @@ const AllUsers = () => {
     };
 
     const handleRoleChange = (user, newRole) => {
-        if (user.role === newRole) return; // safety check
+        if (user.role === newRole || updatingUserId === user._id) return;
 
         Swal.fire({
             title: "Are you sure?",
@@ -86,17 +91,21 @@ const AllUsers = () => {
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, Change Role!",
         }).then((result) => {
-            if (result.isConfirmed) {
-                axiosSecure
-                    .patch(`/user/role/${user._id}`, { role: newRole })  // send role in body
-                    .then(() => {
-                        Swal.fire("Success!", `${user.name} is now ${newRole}.`, "success");
-                        refetch(); // refresh user list
-                    })
-                    .catch((err) => {
-                        Swal.fire("Error!", `Failed to update role: ${err.message}`, "error");
-                    });
-            }
+            if (!result.isConfirmed) return;
+
+            setUpdatingUserId(user._id);
+            axiosSecure
+                .patch(`/user/role/${user._id}`, { role: newRole })
+                .then(() => {
+                    Swal.fire("Success!", `${user.name} is now ${newRole}.`, "success");
+                    refetch();
+                })
+                .catch((err) => {
+                    Swal.fire("Error!", `Failed to update role: ${err.message}`, "error");
+                })
+                .finally(() => {
+                    setUpdatingUserId(null);
+                });
         });
     };
     // ========== Delete User ==========
@@ -239,64 +248,38 @@ const AllUsers = () => {
                                 </td>
                                 <td className="px-6 py-4 text-[#475569]">{user.email}</td>
                                 <td className="px-6 py-4 text-center">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${user.role === "admin"
-                                            ? "bg-[#1558D6] text-white"
-                                            : "bg-[#E6F0FF] text-[#0F172A]"
-                                            }`}
+                                    <select
+                                        value={user.role || "user"}
+                                        onChange={(e) => handleRoleChange(user, e.target.value)}
+                                        disabled={updatingUserId === user._id}
+                                        className={`min-w-[130px] rounded-lg border px-3 py-2 text-xs font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-200 ${
+                                            user.role === "admin"
+                                                ? "border-blue-200 bg-blue-50 text-blue-700"
+                                                : user.role === "developer"
+                                                    ? "border-slate-200 bg-slate-100 text-slate-700"
+                                                    : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                        } ${updatingUserId === user._id ? "cursor-not-allowed opacity-70" : ""}`}
+                                        aria-label={`Update role for ${user.name}`}
                                     >
-                                        {user.role}
-                                    </span>
+                                        <option value="user">User</option>
+                                        <option value="admin">Admin</option>
+                                        <option value="developer">Developer</option>
+                                    </select>
                                 </td>
                                 <td className="px-6 py-4 text-center">
-                                    <div className="flex justify-center gap-4">
-                                        <div className="flex gap-2">
-                                            {/* Admin */}
-                                            <button
-                                                onClick={() => handleRoleChange(user, "admin")}
-                                                className={`px-2 py-1 rounded-lg text-white font-semibold transition-transform hover:scale-110 ${user.role === "admin"
-                                                    ? "bg-gray-400 cursor-not-allowed"
-                                                    : "bg-[#2974FF] hover:bg-[#1558D6]"
-                                                    }`}
-                                                disabled={user.role === "admin"}
-                                                title="Make Admin"
-                                            >
-                                                Admin
-                                            </button>
-
-                                            {/* Developer */}
-                                            <button
-                                                onClick={() => handleRoleChange(user, "developer")}
-                                                className={`px-2 py-1 rounded-lg text-white font-semibold transition-transform hover:scale-110 ${user.role === "developer"
-                                                    ? "bg-gray-400 cursor-not-allowed"
-                                                    : "bg-[#0F172A] hover:bg-[#475569]"
-                                                    }`}
-                                                disabled={user.role === "developer"}
-                                                title="Make Developer"
-                                            >
-                                                Developer
-                                            </button>
-
-                                            {/* User */}
-                                            <button
-                                                onClick={() => handleRoleChange(user, "user")}
-                                                className={`px-2 py-1 rounded-lg text-white font-semibold transition-transform hover:scale-110 ${user.role === "user"
-                                                    ? "bg-gray-400 cursor-not-allowed"
-                                                    : "bg-[#1558D6] hover:bg-[#2974FF]"
-                                                    }`}
-                                                disabled={user.role === "user"}
-                                                title="Make User"
-                                            >
-                                                User
-                                            </button>
-                                        </div>
-
+                                    <div className="flex items-center justify-center gap-2">
+                                        <ViewDetailsButton
+                                            to={`/dashboard/users/${user._id}`}
+                                            className="h-9 w-9 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-300 hover:bg-blue-100"
+                                        />
                                         <button
+                                            type="button"
                                             onClick={() => handleDelete(user)}
-                                            className="text-red-500 hover:text-red-700 transition-transform hover:scale-110"
+                                            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100"
                                             title="Delete User"
+                                            aria-label="Delete User"
                                         >
-                                            <FaTrashAlt size={18} />
+                                            <FaTrashAlt size={16} />
                                         </button>
                                     </div>
                                 </td>
@@ -334,63 +317,38 @@ const AllUsers = () => {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center mt-3">
-                            <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold ${user.role === "admin"
-                                    ? "bg-[#1558D6] text-white"
-                                    : "bg-[#E6F0FF] text-[#0F172A]"
-                                    }`}
+                        <div className="flex justify-between items-center mt-3 gap-3">
+                            <select
+                                value={user.role || "user"}
+                                onChange={(e) => handleRoleChange(user, e.target.value)}
+                                disabled={updatingUserId === user._id}
+                                className={`min-w-[120px] rounded-lg border px-3 py-2 text-xs font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-200 ${
+                                    user.role === "admin"
+                                        ? "border-blue-200 bg-blue-50 text-blue-700"
+                                        : user.role === "developer"
+                                            ? "border-slate-200 bg-slate-100 text-slate-700"
+                                            : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                } ${updatingUserId === user._id ? "cursor-not-allowed opacity-70" : ""}`}
+                                aria-label={`Update role for ${user.name}`}
                             >
-                                {user.role}
-                            </span>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                                <option value="developer">Developer</option>
+                            </select>
 
-                            <div className="flex gap-3">
-                                <div className="flex gap-2">
-                                    {/* Admin */}
-                                    <button
-                                        onClick={() => handleRoleChange(user, "admin")}
-                                        className={`px-2 py-1 rounded-lg text-white font-semibold transition-transform hover:scale-110 ${user.role === "admin"
-                                            ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-[#2974FF] hover:bg-[#1558D6]"
-                                            }`}
-                                        disabled={user.role === "admin"}
-                                        title="Make Admin"
-                                    >
-                                        Admin
-                                    </button>
-
-                                    {/* Developer */}
-                                    <button
-                                        onClick={() => handleRoleChange(user, "developer")}
-                                        className={`px-2 py-1 rounded-lg text-white font-semibold transition-transform hover:scale-110 ${user.role === "developer"
-                                            ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-[#0F172A] hover:bg-[#475569]"
-                                            }`}
-                                        disabled={user.role === "developer"}
-                                        title="Make Developer"
-                                    >
-                                        Developer
-                                    </button>
-
-                                    {/* User */}
-                                    <button
-                                        onClick={() => handleRoleChange(user, "user")}
-                                        className={`px-2 py-1 rounded-lg text-white font-semibold transition-transform hover:scale-110 ${user.role === "user"
-                                            ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-[#1558D6] hover:bg-[#2974FF]"
-                                            }`}
-                                        disabled={user.role === "user"}
-                                        title="Make User"
-                                    >
-                                        User
-                                    </button>
-                                </div>
-
+                            <div className="flex items-center gap-2">
+                                <ViewDetailsButton
+                                    to={`/dashboard/users/${user._id}`}
+                                    className="h-9 w-9 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-300 hover:bg-blue-100"
+                                />
                                 <button
+                                    type="button"
                                     onClick={() => handleDelete(user)}
-                                    className="bg-red-500 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-red-700 transition"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100"
+                                    title="Delete User"
+                                    aria-label="Delete User"
                                 >
-                                    Delete
+                                    <FaTrashAlt size={16} />
                                 </button>
                             </div>
                         </div>
