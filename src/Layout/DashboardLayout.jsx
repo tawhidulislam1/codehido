@@ -151,7 +151,7 @@ const DashboardLayout = () => {
                 </li>
                 <li>
                   <NavLink
-                    to="/dashboard/content-management"
+                    to="/dashboard/content"
                     className={navLinkClass}
                   >
                     <BiBookContent /> Content Management
@@ -195,7 +195,7 @@ const DashboardLayout = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/donation-request" className={navLinkClass}>
+                  <NavLink to="/dashboard/donation-request" className={navLinkClass}>
                     <FaAd /> Donation Request
                   </NavLink>
                 </li>

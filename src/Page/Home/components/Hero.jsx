@@ -1,12 +1,14 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade, Navigation } from "swiper/modules";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/effect-fade";
 import "swiper/css/autoplay";
 
-const slides = [
+const fallbackSlides = [
     {
         id: 1,
         title: "Empowering Your Digital Journey.",
@@ -32,6 +34,18 @@ const slides = [
 ];
 
 const Hero = () => {
+    const axiosPublic = useAxiosPublic();
+    const { data } = useQuery({
+        queryKey: ["content-hero"],
+        queryFn: async () => {
+            const res = await axiosPublic.get("/content/hero");
+            return res.data;
+        },
+        retry: false,
+    });
+
+    const slides = Array.isArray(data) && data.length ? data : fallbackSlides;
+
     return (
         <div className="relative header overflow-hidden">
             <Swiper

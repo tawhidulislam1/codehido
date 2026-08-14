@@ -31,8 +31,12 @@ import EditService from "../Page/Dashboard/Services/EditService";
 import BlogList from "../Page/Dashboard/Blog/BlogList";
 import AddBlog from "../Page/Dashboard/Blog/AddBlog";
 import EditBlog from "../Page/Dashboard/Blog/EditBlog";
+import ReviewList from "../Page/Dashboard/Reviews/ReviewList";
 import Blog from "../Page/Blog/Blog";
 import BlogDetails from "../Page/Blog/BlogDetails";
+import Donation from "../Page/Donation/Donation";
+import ContentManagement from "../Page/Dashboard/Content/ContentManagement";
+import DonationRequests from "../Page/Dashboard/Donation/DonationRequests";
 
 const Router = createBrowserRouter([
     {
@@ -86,6 +90,10 @@ const Router = createBrowserRouter([
             {
                 path: '/teams',
                 element: <Teams />
+            },
+            {
+                path: '/donation',
+                element: <Donation />
             },
             {
                 path: '/login',
@@ -172,6 +180,18 @@ const Router = createBrowserRouter([
             {
                 path: 'team/edit/:id',
                 element: <EditTeamMember />
+            },
+            {
+                path: 'content',
+                element: <ContentManagement />
+            },
+            {
+                path: 'donation-request',
+                element: <DonationRequests />
+            },
+            {
+                path: 'reviews',
+                element: <ReviewList />
             },
             {
                 path: 'profile',

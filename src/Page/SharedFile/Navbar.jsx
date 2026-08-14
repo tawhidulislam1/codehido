@@ -77,6 +77,7 @@ const Navbar = () => {
         { name: "Portfolio", url: "/portfolio" },
         { name: "Blog", url: "/blog" },
         { name: "Teams", url: "/teams" },
+        { name: "Donation", url: "/donation" },
       ],
     },
   ];

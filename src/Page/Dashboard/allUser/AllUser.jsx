@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import useAuth from "../../../Hooks/useAuth";
 import { FaTrashAlt, FaUserShield, FaUserCircle } from "react-icons/fa";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
 const AllUsers = () => {
     const axiosSecure = useAxiosSecure();
+    const { user } = useAuth();
 
     const {
         data: users = [],
@@ -14,10 +16,13 @@ const AllUsers = () => {
         error,
         refetch,
     } = useQuery({
-        queryKey: ["allUsers"],
+        queryKey: ["allUsers", user?.email],
+        enabled: !!user?.email,
         queryFn: async () => {
             const res = await axiosSecure.get("/user");
-            return res.data;
+            return Array.isArray(res.data)
+                ? res.data
+                : res.data?.result || res.data?.users || [];
         },
     });
 

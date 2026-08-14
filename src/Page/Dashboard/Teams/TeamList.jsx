@@ -86,20 +86,29 @@ export default function TeamTable() {
     const axiosPublic = useAxiosPublic();
     const axiosSecure = useAxiosSecure();
 
-    const { data: members = [], refetch } = useQuery({
+    const {
+        data: members = [],
+        isLoading,
+        error,
+        refetch,
+    } = useQuery({
         queryKey: ["team"],
         queryFn: async () => {
             const res = await axiosPublic.get("/dashboard/team");
-            return res.data;
+            return Array.isArray(res.data)
+                ? res.data
+                : res.data?.result || res.data?.data || [];
         },
     });
 
     const [membersList, setMembersList] = useState([]);
 
     useEffect(() => {
-        if (members.length > 0) {
+        if (Array.isArray(members)) {
             const withSl = members.map((m, i) => ({ ...m, sl: i + 1 }));
             setMembersList(withSl);
+        } else {
+            setMembersList([]);
         }
     }, [members]);
 
@@ -146,6 +155,45 @@ export default function TeamTable() {
         await axiosSecure.delete(`/dashboard/team/${id}`);
         refetch();
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-64 text-[#2974FF] font-semibold animate-pulse">
+                Loading team members...
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="text-center text-red-500 font-semibold mt-10">
+                ❌ Failed to load team members. Please try again later.
+            </div>
+        );
+    }
+
+    if (membersList.length === 0) {
+        return (
+            <div className="p-8 max-w-4xl mx-auto">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold text-blue-700 mb-4 sm:mb-0">
+                        Admin Portfolio Dashboard
+                    </h1>
+                    <button
+                        onClick={() => navigate("/dashboard/team/add-member")}
+                        className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-xl shadow hover:bg-blue-700 transition"
+                    >
+                        <FaPlus /> Add Member
+                    </button>
+                </div>
+
+                <div className="flex flex-col items-center justify-center h-64 text-[#475569] bg-white rounded-2xl border border-[#E2E8F0] shadow-sm">
+                    <FaGripVertical size={32} className="text-[#CBD5E1] mb-3" />
+                    <p className="text-lg font-medium">No team members found</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-8 max-w-4xl mx-auto">

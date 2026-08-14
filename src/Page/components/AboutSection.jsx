@@ -1,7 +1,10 @@
 
 import { FaCheckCircle } from "react-icons/fa";
 
-const AboutSection = () => {
+const AboutSection = ({ content = {} }) => {
+    const title = content.title || "Why Choose CodeHido?";
+    const text = content.text || "At CodeHido, we are committed to delivering innovative, scalable, and visually stunning digital solutions that empower your business to thrive in the competitive digital era.";
+
     return (
         <section className="relative bg-white py-16 md:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -24,13 +27,20 @@ const AboutSection = () => {
                 {/* Right - Content */}
                 <div className="space-y-6 text-center lg:text-left">
                     <h2 className="text-3xl sm:text-4xl font-bold text-[#0F172A] leading-snug">
-                        Why Choose <span className="text-[#2974FF]">CodeHido?</span>
+                        {title.includes("CodeHido") ? (
+                            <>
+                                {title.replace("CodeHido", "")}
+                                <span className="text-[#2974FF]">CodeHido</span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="text-[#2974FF]">{title}</span>
+                            </>
+                        )}
                     </h2>
 
                     <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-                        At CodeHido, we are committed to delivering innovative, scalable,
-                        and visually stunning digital solutions that empower your business
-                        to thrive in the competitive digital era.
+                        {text}
                     </p>
 
                     <ul className="space-y-3 text-sm sm:text-base">

@@ -6,12 +6,31 @@ import {
     FaEnvelope,
     FaPhoneAlt,
 } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
 import CallToAction from "../Home/components/CallToAction";
 import { useLocation } from "react-router-dom";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
+
+const fallbackFooter = {
+    email: "codehido@example.com",
+    phone: "+880 1878-457216",
+    address: "Feni, Bangladesh",
+};
 
 export default function Footer() {
     const { pathname } = useLocation();
-    console.log(pathname);
+    const axiosPublic = useAxiosPublic();
+    const { data } = useQuery({
+        queryKey: ["content-footer"],
+        queryFn: async () => {
+            const res = await axiosPublic.get("/content/footer");
+            return res.data;
+        },
+        retry: false,
+    });
+
+    const footerContent = data && typeof data === "object" ? data : fallbackFooter;
+
     return (
         <div className="mt-10">
             {pathname === '/' && <CallToAction />}
@@ -67,19 +86,19 @@ export default function Footer() {
                             <li className="flex items-center gap-3 group">
                                 <FaEnvelope className="text-[#2974FF] group-hover:scale-110 transition-transform" />
                                 <a
-                                    href="mailto:codehido@example.com"
+                                    href={`mailto:${footerContent.email || fallbackFooter.email}`}
                                     className="text-gray-400 hover:text-[#2974FF] transition-colors"
                                 >
-                                    codehido@example.com
+                                    {footerContent.email || fallbackFooter.email}
                                 </a>
                             </li>
                             <li className="flex items-center gap-3 group">
                                 <FaPhoneAlt className="text-[#2974FF] group-hover:scale-110 transition-transform" />
                                 <a
-                                    href="tel:+8801878457216"
+                                    href={`tel:${(footerContent.phone || fallbackFooter.phone).replace(/\s+/g, "")}`}
                                     className="text-gray-400 hover:text-[#2974FF] transition-colors"
                                 >
-                                    +880 1878-457216
+                                    {footerContent.phone || fallbackFooter.phone}
                                 </a>
                             </li>
                         </ul>
