@@ -1,15 +1,36 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 
 const ServicesDetails = () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const AxiosPublic = useAxiosPublic();
+
+    const { data: service, isLoading, isError } = useQuery({
+        queryKey: ['service', id],
+        queryFn: async () => {
+            const res = await AxiosPublic.get(`/service/${id}`);
+            return res.data;
+        },
+        enabled: !!id,
+    });
+
+    if (isLoading) return <div className="text-center py-20 text-[#2974FF]">Loading service details...</div>;
+    if (isError || !service) return <div className="text-center py-20 text-red-500">Failed to load service details.</div>;
+
+    const featureList = [
+        { title: "High Performance", desc: "Lightning-fast delivery for smooth user experience." },
+        { title: "Secure & Scalable", desc: "Built for reliability, growth, and long-term business value." },
+        { title: "Modern UI/UX", desc: "Clean, engaging design that makes your brand memorable." },
+    ];
+
     return (
         <div style={{ backgroundColor: "#F5FAFF", color: "#0F172A" }} className="min-h-screen">
-
-            {/* Hero / Top Section */}
             <section className="relative overflow-hidden py-28">
                 <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center md:justify-between gap-12">
-
-                    {/* Left Content */}
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -20,10 +41,10 @@ const ServicesDetails = () => {
                             Premium Service
                         </span>
                         <h1 className="text-4xl md:text-5xl font-bold mt-2 mb-6 leading-tight">
-                            Mobile App Development
+                            {service.title}
                         </h1>
                         <p style={{ color: "#475569" }} className="text-lg md:text-xl mb-8">
-                            Build high-performance, secure, and user-friendly mobile apps that delight users and help your business grow globally.
+                            {service.description}
                         </p>
                         <button
                             style={{
@@ -34,9 +55,16 @@ const ServicesDetails = () => {
                         >
                             Get a Free Consultation
                         </button>
+                        <div className="mt-6">
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition cursor-pointer"
+                            >
+                                Back
+                            </button>
+                        </div>
                     </motion.div>
 
-                    {/* Right Illustration / Gradient Shape */}
                     <motion.div
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -45,11 +73,12 @@ const ServicesDetails = () => {
                     >
                         <div
                             style={{
-                                background: "linear-gradient(to right, #2974FF, #1558D6)"
+                                background: service.image
+                                    ? `url(${service.image}) center/cover no-repeat, linear-gradient(to right, #2974FF, #1558D6)`
+                                    : "linear-gradient(to right, #2974FF, #1558D6)"
                             }}
                             className="w-full h-64 md:h-96 rounded-3xl shadow-2xl relative overflow-hidden"
                         >
-                            {/* Decorative Blobs */}
                             <div className="absolute -top-16 -left-16 w-40 h-40 rounded-full opacity-30 animate-pulse" style={{ backgroundColor: "#E6F0FF" }}></div>
                             <div className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full opacity-30 animate-pulse" style={{ backgroundColor: "#E6F0FF" }}></div>
                         </div>
@@ -58,13 +87,8 @@ const ServicesDetails = () => {
                 </div>
             </section>
 
-            {/* Features / Key Highlights */}
             <section className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-3 gap-8">
-                {[
-                    { title: "High Performance", desc: "Lightning-fast apps for smooth user experience." },
-                    { title: "Secure & Scalable", desc: "Enterprise-grade security with easy scalability." },
-                    { title: "Modern UI/UX", desc: "Clean, attractive, and user-friendly designs." },
-                ].map((feature, i) => (
+                {featureList.map((feature, i) => (
                     <motion.div
                         key={i}
                         initial={{ opacity: 0, y: 40 }}
@@ -79,7 +103,6 @@ const ServicesDetails = () => {
                 ))}
             </section>
 
-            {/* CTA Section */}
             <section className="text-center py-24" style={{ background: "linear-gradient(to right, #2974FF, #1558D6)", color: "#FFFFFF" }}>
                 <motion.h2
                     initial={{ scale: 0.95, opacity: 0 }}
@@ -87,10 +110,10 @@ const ServicesDetails = () => {
                     transition={{ duration: 0.6 }}
                     className="text-3xl md:text-4xl font-bold mb-6"
                 >
-                    Ready to Launch Your Mobile App?
+                    Ready to Launch Your Next Digital Solution?
                 </motion.h2>
                 <p style={{ color: "#E6F0FF" }} className="max-w-2xl mx-auto mb-8 text-lg md:text-xl">
-                    Let’s collaborate to bring your vision to life with a top-tier mobile app tailored for your business.
+                    Let’s collaborate to bring your vision to life with a strategy-first solution tailored to your business.
                 </p>
                 <button
                     style={{ backgroundColor: "#FFFFFF", color: "#1558D6" }}

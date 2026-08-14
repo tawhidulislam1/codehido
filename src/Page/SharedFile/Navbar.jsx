@@ -75,6 +75,7 @@ const Navbar = () => {
         { name: "Career", url: "/career" },
         { name: "Testimonial", url: "/testimonial" },
         { name: "Portfolio", url: "/portfolio" },
+        { name: "Blog", url: "/blog" },
         { name: "Teams", url: "/teams" },
       ],
     },

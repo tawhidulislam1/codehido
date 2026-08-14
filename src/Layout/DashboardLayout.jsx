@@ -120,6 +120,11 @@ const DashboardLayout = () => {
                   </NavLink>
                 </li>
                 <li>
+                  <NavLink to="/dashboard/service" className={navLinkClass}>
+                    <MdOutlineDesignServices /> Manage Services
+                  </NavLink>
+                </li>
+                <li>
                   <NavLink to="/dashboard/add-service" className={navLinkClass}>
                     <MdOutlineDesignServices /> Add Service
                   </NavLink>
@@ -132,6 +137,11 @@ const DashboardLayout = () => {
                 <li>
                   <NavLink to="/dashboard/reviews" className={navLinkClass}>
                     <FaRegCommentDots /> Review List
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/blog" className={navLinkClass}>
+                    <FaBlog /> Manage Blog
                   </NavLink>
                 </li>
                 <li>

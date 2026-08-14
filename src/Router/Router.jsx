@@ -25,6 +25,14 @@ import TeamTable from "../Page/Dashboard/Teams/TeamList";
 import AddTeamMember from "../Page/Dashboard/Teams/addTeamMember";
 import EditTeamMember from "../Page/Dashboard/Teams/EditTeamMember";
 import Profile from "../Page/Profile/Profile";
+import Services from "../Page/Dashboard/Services/Services";
+import AddService from "../Page/Dashboard/Services/AddService";
+import EditService from "../Page/Dashboard/Services/EditService";
+import BlogList from "../Page/Dashboard/Blog/BlogList";
+import AddBlog from "../Page/Dashboard/Blog/AddBlog";
+import EditBlog from "../Page/Dashboard/Blog/EditBlog";
+import Blog from "../Page/Blog/Blog";
+import BlogDetails from "../Page/Blog/BlogDetails";
 
 const Router = createBrowserRouter([
     {
@@ -44,6 +52,14 @@ const Router = createBrowserRouter([
                 element: <Service />
             },
             {
+                path: '/services/:id',
+                element: <ServicesDetails />
+            },
+            {
+                path: '/servicesDetals',
+                element: <ServicesDetails />
+            },
+            {
                 path: '/contact',
                 element: <Connect />
             },
@@ -52,16 +68,20 @@ const Router = createBrowserRouter([
                 element: <TeamMemberPage />
             },
             {
-                path: '/servicesDetals',
-                element: <ServicesDetails />
-            },
-            {
                 path: '/testimonial',
                 element: <Testimonial />
             },
             {
                 path: '/portfolio',
                 element: <Portfolio />
+            },
+            {
+                path: '/blog',
+                element: <Blog />
+            },
+            {
+                path: '/blog/:id',
+                element: <BlogDetails />
             },
             {
                 path: '/teams',
@@ -113,6 +133,32 @@ const Router = createBrowserRouter([
                 path: 'edit-portfolio/:id',
                 element: <EditPortfolio></EditPortfolio>,
                 loader: ({ params }) => fetch(`${import.meta.env.VITE_API_URL}/portfolio/${params.id}`).then(res => res.json())
+            },
+            {
+                path: 'service',
+                element: <Services />
+            },
+            {
+                path: 'add-service',
+                element: <AddService />
+            },
+            {
+                path: 'edit-service/:id',
+                element: <EditService />,
+                loader: ({ params }) => fetch(`${import.meta.env.VITE_API_URL}/service/${params.id}`).then(res => res.json())
+            },
+            {
+                path: 'blog',
+                element: <BlogList />
+            },
+            {
+                path: 'add-blog',
+                element: <AddBlog />
+            },
+            {
+                path: 'edit-blog/:id',
+                element: <EditBlog />,
+                loader: ({ params }) => fetch(`${import.meta.env.VITE_API_URL}/blog/${params.id}`).then(res => res.json())
             },
             //? team page
             {
