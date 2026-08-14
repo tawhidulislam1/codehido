@@ -141,10 +141,8 @@ const ContentManagement = () => {
 
       <div className="grid gap-6">
         {sectionConfig.map(({ key, label, fields }) => (
-          <motion.div
+          <div
             key={key}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-2xl shadow-md border border-[#E2E8F0] p-6"
           >
             <div className="flex items-center justify-between mb-5">
@@ -183,7 +181,7 @@ const ContentManagement = () => {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
