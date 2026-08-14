@@ -72,10 +72,9 @@ const DashboardLayout = () => {
   };
 
   const navLinkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-300 ${
-      isActive
-        ? "bg-[#2974FF] text-white shadow-md"
-        : "text-[#F5FAFF] hover:bg-[#1558D6] hover:text-white"
+    `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-300 ${isActive
+      ? "bg-[#2974FF] text-white shadow-md"
+      : "text-[#F5FAFF] hover:bg-[#1558D6] hover:text-white"
     }`;
 
   return (
@@ -121,11 +120,11 @@ const DashboardLayout = () => {
                     <MdOutlineDesignServices /> Manage Services
                   </NavLink>
                 </li>
-                <li>
+                {/* <li>
                   <NavLink to="/dashboard/add-service" className={navLinkClass}>
                     <MdOutlineDesignServices /> Add Service
                   </NavLink>
-                </li>
+                </li> */}
                 <li>
                   <NavLink to="/dashboard/team" className={navLinkClass}>
                     <MdOutlinePeople /> Team Member
@@ -141,11 +140,11 @@ const DashboardLayout = () => {
                     <FaBlog /> Manage Blog
                   </NavLink>
                 </li>
-                <li>
+                {/* <li>
                   <NavLink to="/dashboard/add-blog" className={navLinkClass}>
                     <FaBlog /> Add Blog
                   </NavLink>
-                </li>
+                </li> */}
                 <li>
                   <NavLink to="/dashboard/content" className={navLinkClass}>
                     <BiBookContent /> Content Management
@@ -176,11 +175,6 @@ const DashboardLayout = () => {
                 <li>
                   <NavLink to="/" className={navLinkClass}>
                     <FaHome /> Home
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/search" className={navLinkClass}>
-                    <FaSearch /> Search
                   </NavLink>
                 </li>
                 <li>

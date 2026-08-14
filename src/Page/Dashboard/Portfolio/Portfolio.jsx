@@ -1,12 +1,26 @@
 /* eslint-disable no-unused-vars */
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
-
+import { FaEdit, FaTrash, FaPlus, FaEye, FaGripVertical } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import {
+    DndContext,
+    closestCenter,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import useAdmin from "../../../Hooks/useAdmin";
 import useTableControls from "../../../Hooks/useTableControls";
@@ -15,10 +29,86 @@ import FilterDropdown from "../../../Commonents/FilterDropdown";
 import SortableHeader from "../../../Commonents/SortableHeader";
 import PaginationControls from "../../../Commonents/PaginationControls";
 
+function SortableProjectRow({ project, index, isAdmin, handleDelete, navigate, handleStatusChange }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: project._id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.7 : 1,
+    };
+
+    return (
+        <tr
+            ref={setNodeRef}
+            style={style}
+            className={`border-t border-gray-200 hover:bg-blue-50 transition-all ${project.status === "Inactive" ? "opacity-70" : ""}`}
+        >
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center gap-3">
+                    <button
+                        type="button"
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-grab active:cursor-grabbing text-gray-500 hover:text-blue-600"
+                        aria-label={`Reorder ${project.name}`}
+                    >
+                        <FaGripVertical />
+                    </button>
+                    {index + 1}
+                </div>
+            </td>
+            <td className="px-4 sm:px-6 py-4 font-medium">{project.name}</td>
+            <td className="px-4 sm:px-6 py-4 hidden md:table-cell">{project.designedBy}</td>
+            <td className="px-4 sm:px-6 py-4 md:table-cell">
+                <select
+                    value={project.status}
+                    disabled={!isAdmin}
+                    onChange={(e) => handleStatusChange(project._id, e.target.value)}
+                    className={`px-3 py-1 rounded-lg border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all ${project.status === "active"
+                        ? "bg-green-100 text-green-800 border-green-300"
+                        : "bg-red-100 text-red-700 border-red-300"
+                        } ${!isAdmin ? "opacity-60 cursor-not-allowed" : ""}`}
+                >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </td>
+            <td className="px-4 sm:px-6 py-4 text-center">
+                <div className="flex justify-center gap-4 text-lg">
+                    <button
+                        className="text-green-500 cursor-pointer hover:text-green-700"
+                        onClick={() => navigate(`/portfolio/${project._id}`)}
+                    >
+                        <FaEye />
+                    </button>
+
+                    <button
+                        className="text-blue-500 cursor-pointer hover:text-blue-700"
+                        onClick={() => navigate(`/dashboard/edit-portfolio/${project._id}`)}
+                    >
+                        <FaEdit />
+                    </button>
+
+                    {isAdmin && (
+                        <button
+                            onClick={() => handleDelete(project._id)}
+                            className="text-red-500 cursor-pointer hover:text-red-700"
+                        >
+                            <FaTrash />
+                        </button>
+                    )}
+                </div>
+            </td>
+        </tr>
+    );
+}
+
 export default function AdminPortfolio() {
     const [isAdmin] = useAdmin();
     const navigate = useNavigate();
     const AxiosSecure = useAxiosSecure();
+    const queryClient = useQueryClient();
     const {
         search,
         setSearch,
@@ -56,7 +146,14 @@ export default function AdminPortfolio() {
         },
     });
 
-    const projects = data?.data ?? [];
+    const [projectsList, setProjectsList] = useState([]);
+    const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+    useEffect(() => {
+        setProjectsList(data?.data ?? []);
+    }, [data]);
+
+    const projects = projectsList.length ? projectsList : (data?.data ?? []);
     const totalPages = data?.totalPages ?? 1;
     const isProjectLoading = isPending || isFetching;
 
@@ -97,6 +194,38 @@ export default function AdminPortfolio() {
                     refetch();
                 }
             });
+    };
+
+    const handleDragEnd = async (event) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+
+        const previousOrder = [...projects];
+        const oldIndex = previousOrder.findIndex((item) => item._id === active.id);
+        const newIndex = previousOrder.findIndex((item) => item._id === over.id);
+
+        if (oldIndex === -1 || newIndex === -1) return;
+
+        const reordered = arrayMove(previousOrder, oldIndex, newIndex);
+        setProjectsList(reordered);
+
+        try {
+            await AxiosSecure.patch("/dashboard/portfolio/reorder", {
+                items: reordered.map((item, index) => ({
+                    id: item._id,
+                    order: index + 1,
+                })),
+            });
+
+            await queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+        } catch (error) {
+            setProjectsList(previousOrder);
+            Swal.fire({
+                title: "Reorder failed",
+                text: error?.response?.data?.message || "Could not save the new portfolio order.",
+                icon: "error",
+            });
+        }
     };
 
     if (isPending && projects.length === 0) {
@@ -157,83 +286,41 @@ export default function AdminPortfolio() {
                 transition={{ duration: 0.5 }}
                 className="overflow-x-auto max-w-6xl mx-auto bg-white rounded-xl shadow-md border border-gray-200"
             >
-                <table className="min-w-full text-sm text-left border-collapse">
-                    <thead className="bg-blue-100 text-blue-900 uppercase text-xs sm:text-sm font-semibold">
-                        <tr>
-                            <th className="px-4 sm:px-6 py-3">#</th>
-                            <th className="px-4 sm:px-6 py-3">
-                                <SortableHeader
-                                    label="Project Name"
-                                    active={sort === "name" || sort === "-name"}
-                                    direction={sort === "-name" ? "desc" : "asc"}
-                                    onClick={() => toggleSort("name")}
-                                />
-                            </th>
-                            <th className="px-4 sm:px-6 py-3 hidden md:table-cell">Developer</th>
-                            <th className="px-4 sm:px-6 py-3">Status</th>
-                            <th className="px-4 sm:px-6 py-3 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {projects.map((p, index) => (
-                            <tr
-                                key={p._id}
-                                className={`border-t border-gray-200 hover:bg-blue-50 transition-all ${p.status === "Inactive" ? "opacity-70" : ""}`}
-                            >
-                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{index + 1}</td>
-                                <td className="px-4 sm:px-6 py-4 font-medium">{p.name}</td>
-                                <td className="px-4 sm:px-6 py-4 hidden md:table-cell">{p.designedBy}</td>
-                                <td className="px-4 sm:px-6 py-4  md:table-cell">
-                                    <select
-                                        value={p.status}
-                                        disabled={!isAdmin}
-                                        onChange={(e) => handleStatusChange(p._id, e.target.value)}
-                                        className={`px-3 py-1 rounded-lg border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all ${p.status === "active"
-                                            ? "bg-green-100 text-green-800 border-green-300"
-                                            : "bg-red-100 text-red-700 border-red-300"
-                                            } ${!isAdmin ? "opacity-60 cursor-not-allowed" : ""}`}
-                                    >
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
-                                </td>
-
-
-
-                                <td className="px-4 sm:px-6 py-4 text-center">
-                                    <div className="flex justify-center gap-4 text-lg">
-                                        {/* View Button */}
-                                        <button
-                                            className="text-green-500 cursor-pointer hover:text-green-700"
-                                            onClick={() => navigate(`/portfolio/${p._id}`)}
-                                        >
-                                            <FaEye />
-                                        </button>
-
-                                        {/* Edit Button */}
-                                        <button
-                                            className="text-blue-500 cursor-pointer hover:text-blue-700"
-                                            onClick={() => navigate(`/dashboard/edit-portfolio/${p._id}`)}
-                                        >
-                                            <FaEdit />
-                                        </button>
-
-                                        {/* Delete Button (Admin only) */}
-                                        {isAdmin && (
-                                            <button
-                                                onClick={() => handleDelete(p._id)}
-                                                className="text-red-500 cursor-pointer hover:text-red-700"
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        )}
-                                    </div>
-                                </td>
-
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext items={projects.map((p) => p._id)} strategy={verticalListSortingStrategy}>
+                        <table className="min-w-full text-sm text-left border-collapse">
+                            <thead className="bg-blue-100 text-blue-900 uppercase text-xs sm:text-sm font-semibold">
+                                <tr>
+                                    <th className="px-4 sm:px-6 py-3">#</th>
+                                    <th className="px-4 sm:px-6 py-3">
+                                        <SortableHeader
+                                            label="Project Name"
+                                            active={sort === "name" || sort === "-name"}
+                                            direction={sort === "-name" ? "desc" : "asc"}
+                                            onClick={() => toggleSort("name")}
+                                        />
+                                    </th>
+                                    <th className="px-4 sm:px-6 py-3 hidden md:table-cell">Developer</th>
+                                    <th className="px-4 sm:px-6 py-3">Status</th>
+                                    <th className="px-4 sm:px-6 py-3 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {projects.map((p, index) => (
+                                    <SortableProjectRow
+                                        key={p._id}
+                                        project={p}
+                                        index={index}
+                                        isAdmin={isAdmin}
+                                        handleDelete={handleDelete}
+                                        navigate={navigate}
+                                        handleStatusChange={handleStatusChange}
+                                    />
+                                ))}
+                            </tbody>
+                        </table>
+                    </SortableContext>
+                </DndContext>
             </motion.div>
 
             <div className="max-w-6xl mx-auto mt-6">

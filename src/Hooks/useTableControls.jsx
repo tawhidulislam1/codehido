@@ -22,12 +22,14 @@ const useTableControls = ({ defaultLimit = 10 } = {}) => {
     };
 
     const setFilterValueWrapper = (value) => {
-        setFilterValue(value);
+        const nextValue = typeof value === "function" ? value(filterValue) : value;
+        setFilterValue(nextValue);
         setPage(1);
     };
 
     const setSort = (value) => {
-        setSortState(value);
+        const nextSort = typeof value === "function" ? value(sort) : value;
+        setSortState(nextSort);
         setPage(1);
     };
 
