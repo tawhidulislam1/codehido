@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { FaEnvelope, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import useAdmin from "../../../Hooks/useAdmin";
+import useDeveloper from "../../../Hooks/useDeveloper";
 import ViewDetailsButton from "../../../Commonents/ViewDetailsButton";
 
 const formatDate = (value) => {
@@ -32,16 +34,28 @@ const normalizeContactMessages = (data) => {
 
 export default function ContactList() {
     const axiosSecure = useAxiosSecure();
+    const [isAdmin] = useAdmin();
+    const [isDeveloper] = useDeveloper();
+    const isDeveloperRole = !isAdmin && Boolean(isDeveloper);
 
     const { data: messages = [], isPending, refetch } = useQuery({
         queryKey: ["dashboard-contact-list"],
         queryFn: async () => {
-            const res = await axiosSecure.get("/contact");
+            const res = await axiosSecure.get("/dashboard/messages");
             return normalizeContactMessages(res.data);
         },
     });
 
     const handleDelete = async (id, name) => {
+        if (isDeveloperRole) {
+            Swal.fire({
+                title: "Read-only access",
+                text: "Only admins can delete contact messages.",
+                icon: "info",
+            });
+            return;
+        }
+
         const result = await Swal.fire({
             title: "Delete contact message?",
             text: `This will permanently remove ${name || "this message"}.`,
@@ -127,15 +141,17 @@ export default function ContactList() {
                                 <td className="px-6 py-4">
                                     <div className="flex items-center justify-center gap-3">
                                         <ViewDetailsButton to={`/dashboard/contact/${message._id}`} className="px-2 py-1 text-[10px]" />
-                                        <button
-                                            type="button"
-                                            onClick={() => handleDelete(message._id, message.name)}
-                                            className="text-red-500 transition hover:text-red-700"
-                                            title="Delete message"
-                                            aria-label="Delete message"
-                                        >
-                                            <FaTrashAlt size={16} />
-                                        </button>
+                                        {!isDeveloperRole && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDelete(message._id, message.name)}
+                                                className="text-red-500 transition hover:text-red-700"
+                                                title="Delete message"
+                                                aria-label="Delete message"
+                                            >
+                                                <FaTrashAlt size={16} />
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -154,15 +170,17 @@ export default function ContactList() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <ViewDetailsButton to={`/dashboard/contact/${message._id}`} className="px-2 py-1 text-[10px]" />
-                                <button
-                                    type="button"
-                                    onClick={() => handleDelete(message._id, message.name)}
-                                    className="text-red-500 transition hover:text-red-700"
-                                    title="Delete message"
-                                    aria-label="Delete message"
-                                >
-                                    <FaTrashAlt size={15} />
-                                </button>
+                                {!isDeveloperRole && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(message._id, message.name)}
+                                        className="text-red-500 transition hover:text-red-700"
+                                        title="Delete message"
+                                        aria-label="Delete message"
+                                    >
+                                        <FaTrashAlt size={15} />
+                                    </button>
+                                )}
                             </div>
                         </div>
 

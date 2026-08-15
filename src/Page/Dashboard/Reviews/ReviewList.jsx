@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { FaStar, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import useAdmin from "../../../Hooks/useAdmin";
+import useDeveloper from "../../../Hooks/useDeveloper";
 import ViewDetailsButton from "../../../Commonents/ViewDetailsButton";
 
 const normalizeReviews = (data) => {
@@ -16,6 +18,9 @@ const normalizeReviews = (data) => {
 
 const ReviewList = () => {
     const axiosSecure = useAxiosSecure();
+    const [isAdmin] = useAdmin();
+    const [isDeveloper] = useDeveloper();
+    const isDeveloperRole = !isAdmin && Boolean(isDeveloper);
 
     const { data: reviews = [], isPending, refetch } = useQuery({
         queryKey: ["dashboard-review-list"],
@@ -26,6 +31,15 @@ const ReviewList = () => {
     });
 
     const handleStatusChange = async (id, status) => {
+        if (isDeveloperRole) {
+            Swal.fire({
+                title: "Read-only access",
+                text: "Only admins can update review status.",
+                icon: "info",
+            });
+            return;
+        }
+
         try {
             const res = await axiosSecure.patch(`/dashboard/review/${id}`, { status });
             if (res.data?.modifiedCount > 0 || res.data?.updatedReview) {
@@ -48,6 +62,15 @@ const ReviewList = () => {
     };
 
     const handleDelete = (id, name) => {
+        if (isDeveloperRole) {
+            Swal.fire({
+                title: "Read-only access",
+                text: "Only admins can delete reviews.",
+                icon: "info",
+            });
+            return;
+        }
+
         Swal.fire({
             title: "Delete review?",
             text: `You are about to delete ${name || "this review"}.`,
@@ -147,11 +170,12 @@ const ReviewList = () => {
                                 <td className="px-6 py-4 text-center">
                                     <select
                                         value={review.status || "inactive"}
+                                        disabled={isDeveloperRole}
                                         onChange={(e) => handleStatusChange(review._id, e.target.value)}
                                         className={`px-3 py-1 rounded-lg border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all ${review.status === "active"
                                             ? "bg-green-100 text-green-800 border-green-300"
                                             : "bg-red-100 text-red-700 border-red-300"
-                                            }`}
+                                            } ${isDeveloperRole ? "opacity-60 cursor-not-allowed" : ""}`}
                                     >
                                         <option value="active">Active</option>
                                         <option value="inactive">Inactive</option>
@@ -160,13 +184,15 @@ const ReviewList = () => {
                                 <td className="px-6 py-4 text-center">
                                     <div className="flex items-center justify-center gap-2">
                                         <ViewDetailsButton to={`/dashboard/reviews/${review._id}`} className="px-2 py-1 text-[10px]" />
-                                        <button
-                                            onClick={() => handleDelete(review._id, review.name)}
-                                            className="text-red-500 hover:text-red-700 transition-transform hover:scale-110"
-                                            title="Delete Review"
-                                        >
-                                            <FaTrashAlt size={18} />
-                                        </button>
+                                        {!isDeveloperRole && (
+                                            <button
+                                                onClick={() => handleDelete(review._id, review.name)}
+                                                className="text-red-500 hover:text-red-700 transition-transform hover:scale-110"
+                                                title="Delete Review"
+                                            >
+                                                <FaTrashAlt size={18} />
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -205,22 +231,25 @@ const ReviewList = () => {
                         <div className="flex justify-between items-center gap-2">
                             <select
                                 value={review.status || "inactive"}
+                                disabled={isDeveloperRole}
                                 onChange={(e) => handleStatusChange(review._id, e.target.value)}
                                 className={`px-3 py-1 rounded-lg border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all ${review.status === "active"
                                     ? "bg-green-100 text-green-800 border-green-300"
                                     : "bg-red-100 text-red-700 border-red-300"
-                                    }`}
+                                    } ${isDeveloperRole ? "opacity-60 cursor-not-allowed" : ""}`}
                             >
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
 
-                            <button
-                                onClick={() => handleDelete(review._id, review.name)}
-                                className="text-red-500 hover:text-red-700"
-                            >
-                                <FaTrashAlt size={18} />
-                            </button>
+                            {!isDeveloperRole && (
+                                <button
+                                    onClick={() => handleDelete(review._id, review.name)}
+                                    className="text-red-500 hover:text-red-700"
+                                >
+                                    <FaTrashAlt size={18} />
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}

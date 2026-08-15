@@ -4,14 +4,16 @@ import useAxiosSecure from "./useAxiosSecure";
 
 
 const useDeveloper = () => {
-
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
-    const { data: isDeveloper = [], isPending: isDeveloperLoading } = useQuery({
-        queryKey: [user?.email, "developer"],
+    const { data: isDeveloper = false, isPending: isDeveloperLoading } = useQuery({
+        queryKey: [user?.email, 'developer'],
+        enabled: !!user?.email,
+        retry: false,
         queryFn: async () => {
+            if (!user?.email) return false;
             const res = await axiosSecure.get(`/user/developer/${user.email}`);
-            return res.data;
+            return Boolean(res.data?.developer);
         }
     });
     return [isDeveloper, isDeveloperLoading];

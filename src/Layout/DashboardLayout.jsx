@@ -24,10 +24,15 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
 import useAuth from "../Hooks/useAuth";
+import useAdmin from "../Hooks/useAdmin";
+import useDeveloper from "../Hooks/useDeveloper";
 
 const DashboardLayout = () => {
   const { logOut } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin] = useAdmin();
+  const [isDeveloper] = useDeveloper();
+  const isDeveloperRole = !isAdmin && Boolean(isDeveloper);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
 
@@ -117,46 +122,44 @@ const DashboardLayout = () => {
                     <FaPlusCircle /> Portfolio
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/dashboard/service" className={navLinkClass}>
-                    <MdOutlineDesignServices /> Manage Services
-                  </NavLink>
-                </li>
-                {/* <li>
-                  <NavLink to="/dashboard/add-service" className={navLinkClass}>
-                    <MdOutlineDesignServices /> Add Service
-                  </NavLink>
-                </li> */}
-                <li>
-                  <NavLink to="/dashboard/team" className={navLinkClass}>
-                    <MdOutlinePeople /> Team Member
-                  </NavLink>
-                </li>
+                {!isDeveloperRole && (
+                  <li>
+                    <NavLink to="/dashboard/service" className={navLinkClass}>
+                      <MdOutlineDesignServices /> Manage Services
+                    </NavLink>
+                  </li>
+                )}
+                {!isDeveloperRole && (
+                  <li>
+                    <NavLink to="/dashboard/team" className={navLinkClass}>
+                      <MdOutlinePeople /> Team Member
+                    </NavLink>
+                  </li>
+                )}
                 <li>
                   <NavLink to="/dashboard/reviews" className={navLinkClass}>
-                    <FaRegCommentDots /> Review List
+                    <FaRegCommentDots /> {isDeveloperRole ? "Reviews" : "Review List"}
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/dashboard/blog" className={navLinkClass}>
-                    <FaBlog /> Manage Blog
+                    <FaBlog /> {isDeveloperRole ? "Blog" : "Manage Blog"}
                   </NavLink>
                 </li>
-                {/* <li>
-                  <NavLink to="/dashboard/add-blog" className={navLinkClass}>
-                    <FaBlog /> Add Blog
-                  </NavLink>
-                </li> */}
-                <li>
-                  <NavLink to="/dashboard/content" className={navLinkClass}>
-                    <BiBookContent /> Content Management
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboard/users" className={navLinkClass}>
-                    <FaUsers /> Manage Users
-                  </NavLink>
-                </li>
+                {!isDeveloperRole && (
+                  <li>
+                    <NavLink to="/dashboard/content" className={navLinkClass}>
+                      <BiBookContent /> Content Management
+                    </NavLink>
+                  </li>
+                )}
+                {!isDeveloperRole && (
+                  <li>
+                    <NavLink to="/dashboard/users" className={navLinkClass}>
+                      <FaUsers /> Manage Users
+                    </NavLink>
+                  </li>
+                )}
                 <li>
                   <NavLink to="/dashboard/project" className={navLinkClass}>
                     <FaFolderOpen /> Project
@@ -164,12 +167,12 @@ const DashboardLayout = () => {
                 </li>
                 <li>
                   <NavLink to="/dashboard/contact" className={navLinkClass}>
-                    <FaEnvelope /> Contact
+                    <FaEnvelope /> {isDeveloperRole ? "Messages" : "Contact"}
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/dashboard/profile" className={navLinkClass}>
-                    <FaUserCircle /> Admin Profile
+                    <FaUserCircle /> {isDeveloperRole ? "Profile" : "Admin Profile"}
                   </NavLink>
                 </li>
 
@@ -182,23 +185,27 @@ const DashboardLayout = () => {
                   </button>
                 </li>
 
-                <hr className="my-3 border-[#F5FAFF]/20" />
+                {!isDeveloperRole && (
+                  <>
+                    <hr className="my-3 border-[#F5FAFF]/20" />
 
-                <li>
-                  <NavLink to="/" className={navLinkClass}>
-                    <FaHome /> Home
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/blog" className={navLinkClass}>
-                    <FaBlog /> Blog
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboard/donation-request" className={navLinkClass}>
-                    <FaAd /> Donation Request
-                  </NavLink>
-                </li>
+                    <li>
+                      <NavLink to="/" className={navLinkClass}>
+                        <FaHome /> Home
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/blog" className={navLinkClass}>
+                        <FaBlog /> Blog
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/dashboard/donation-request" className={navLinkClass}>
+                        <FaAd /> Donation Request
+                      </NavLink>
+                    </li>
+                  </>
+                )}
               </ul>
             </nav>
 

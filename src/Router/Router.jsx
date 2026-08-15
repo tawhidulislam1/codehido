@@ -16,6 +16,7 @@ import PrivateRoute from "./PrivateRoute";
 import DashboardLayout from "../Layout/DashboardLayout";
 import AllUsers from "../Page/Dashboard/allUser/AllUser";
 import AdminRoute from "./AdmintRoute";
+import DeveloperRoute from "./DeveloperRoute";
 import Dashboard from "../Page/Dashboard/Dashboard/Dashboard";
 import AdminPortfolio from "../Page/Dashboard/Portfolio/Portfolio";
 import AddPortfolio from "../Page/Dashboard/Portfolio/AddProfolio";
@@ -148,19 +149,19 @@ const Router = createBrowserRouter([
             },
             {
                 path: 'portfolio',
-                element: <AdminPortfolio></AdminPortfolio>
+                element: <DeveloperRoute><AdminPortfolio></AdminPortfolio></DeveloperRoute>
             },
             {
                 path: 'portfolio/:id',
-                element: <AdminRoute><PortfolioDetails /></AdminRoute>
+                element: <DeveloperRoute><PortfolioDetails /></DeveloperRoute>
             },
             {
                 path: 'add-portfolio',
-                element: <AddPortfolio></AddPortfolio>
+                element: <DeveloperRoute><AddPortfolio></AddPortfolio></DeveloperRoute>
             },
             {
                 path: 'edit-portfolio/:id',
-                element: <EditPortfolio></EditPortfolio>,
+                element: <DeveloperRoute><EditPortfolio></EditPortfolio></DeveloperRoute>,
                 loader: ({ params }) => fetch(`${import.meta.env.VITE_API_URL}/portfolio/${params.id}`).then(res => res.json())
             },
             {
@@ -182,19 +183,19 @@ const Router = createBrowserRouter([
             },
             {
                 path: 'blog',
-                element: <BlogList />
+                element: <DeveloperRoute><BlogList /></DeveloperRoute>
             },
             {
                 path: 'blog/:id',
-                element: <AdminRoute><BlogDetailsDashboard /></AdminRoute>
+                element: <DeveloperRoute><BlogDetailsDashboard /></DeveloperRoute>
             },
             {
                 path: 'add-blog',
-                element: <AddBlog />
+                element: <DeveloperRoute><AddBlog /></DeveloperRoute>
             },
             {
                 path: 'edit-blog/:id',
-                element: <EditBlog />,
+                element: <DeveloperRoute><EditBlog /></DeveloperRoute>,
                 loader: ({ params }) => fetch(`${import.meta.env.VITE_API_URL}/blog/${params.id}`).then(res => res.json())
             },
             //? team page
@@ -228,19 +229,19 @@ const Router = createBrowserRouter([
             },
             {
                 path: 'reviews',
-                element: <ReviewList />
+                element: <DeveloperRoute><ReviewList /></DeveloperRoute>
             },
             {
                 path: 'reviews/:id',
-                element: <AdminRoute><ReviewDetails /></AdminRoute>
+                element: <DeveloperRoute><ReviewDetails /></DeveloperRoute>
             },
             {
                 path: 'project',
-                element: <ProjectList />
+                element: <DeveloperRoute><ProjectList /></DeveloperRoute>
             },
             {
                 path: 'project/:id',
-                element: <AdminRoute><ProjectDetails /></AdminRoute>
+                element: <DeveloperRoute><ProjectDetails /></DeveloperRoute>
             },
             {
                 path: 'project/add',
@@ -252,11 +253,11 @@ const Router = createBrowserRouter([
             },
             {
                 path: 'contact',
-                element: <ContactList />
+                element: <DeveloperRoute><ContactList /></DeveloperRoute>
             },
             {
                 path: 'contact/:id',
-                element: <AdminRoute><ContactDetails /></AdminRoute>
+                element: <DeveloperRoute><ContactDetails /></DeveloperRoute>
             },
             {
                 path: 'profile',

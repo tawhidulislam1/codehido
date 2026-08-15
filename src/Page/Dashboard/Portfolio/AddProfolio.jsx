@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import useAdmin from "../../../Hooks/useAdmin";
+import useDeveloper from "../../../Hooks/useDeveloper";
 import Swal from "sweetalert2";
 import ImageUpload from "../../../Commonents/ImageUpload";
 
@@ -17,10 +18,12 @@ export default function AddProject() {
         server: "",
         live: "",
         details: "",
-        status: 'inActive',
+        status: 'active',
     });
     const [imageUrl, setImageUrl] = useState("");
     const [isAdmin] = useAdmin();
+    const [isDeveloper] = useDeveloper();
+    const isDeveloperRole = !isAdmin && Boolean(isDeveloper);
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
 
@@ -28,7 +31,7 @@ export default function AddProject() {
     const payload = {
         ...formData,
         image: imageUrl,
-        status: isAdmin ? 'active' : 'inactive',
+        status: isAdmin ? formData.status : 'inactive',
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -170,6 +173,28 @@ export default function AddProject() {
                             className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none resize-none h-28"
                         />
                     </div>
+
+                    {isDeveloperRole && (
+                        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                            Your submission will be reviewed by admin before going live
+                        </div>
+                    )}
+
+                    {!isDeveloperRole && (
+                        <div>
+                            <label className="block font-medium text-gray-700 mb-1">
+                                Status
+                            </label>
+                            <select
+                                value={formData.status}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+                            >
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    )}
 
                     {/* Buttons */}
                     <div className="flex justify-between mt-6">

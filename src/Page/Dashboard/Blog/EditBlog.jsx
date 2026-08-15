@@ -3,6 +3,8 @@ import { useNavigate, useLoaderData } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import ImageUpload from "../../../Commonents/ImageUpload";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 export default function EditBlog() {
     const { _id, title, content, coverImage, status } = useLoaderData();
