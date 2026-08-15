@@ -6,25 +6,42 @@ import useAuth from "../../Hooks/useAuth";
 import Swal from "sweetalert2";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAxiosPublic from "../../Hooks/useAxiosPublic";
+import useAdmin from "../../Hooks/useAdmin";
+import useDeveloper from "../../Hooks/useDeveloper";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const { logIn, user } = useAuth();
+    const { logIn, user, loading } = useAuth();
     const axiosPublic = useAxiosPublic();
+    const [isAdmin, isAdminLoading] = useAdmin();
+    const [isDeveloper, isDeveloperLoading] = useDeveloper();
     const navigate = useNavigate();
+
     useEffect(() => {
-        if (user) {
-            navigate("/")
+        if (loading || isAdminLoading || isDeveloperLoading || !user) {
+            return;
         }
-    }, [navigate, user])
+
+        if (isAdmin) {
+            navigate("/dashboard");
+            return;
+        }
+
+        if (isDeveloper) {
+            navigate("/my-account/profile");
+            return;
+        }
+
+        navigate("/my-account/profile");
+    }, [loading, isAdminLoading, isDeveloperLoading, user, isAdmin, isDeveloper, navigate]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         logIn(email, password)
-            .then(async (result) => {
+            .then(async () => {
                 const jwtRes = await axiosPublic.post("/jwt", { email });
                 localStorage.setItem('access-token', jwtRes.data.token);
                 Swal.fire({
@@ -32,7 +49,6 @@ const Login = () => {
                     icon: "success",
                     draggable: true,
                 });
-                navigate("/");
             })
             .catch((err) => {
                 Swal.fire({

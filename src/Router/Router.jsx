@@ -206,7 +206,7 @@ const Router = createBrowserRouter([
             },
             {
                 path: 'profile',
-                element: <Navigate to="/my-account/profile" replace />
+                element: <Profile />
             },
             {
                 path: 'users',
