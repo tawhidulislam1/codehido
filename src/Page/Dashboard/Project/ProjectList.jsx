@@ -3,6 +3,8 @@ import { FaFolderOpen, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import useAdmin from "../../../Hooks/useAdmin";
+import useDeveloper from "../../../Hooks/useDeveloper";
 import ViewDetailsButton from "../../../Commonents/ViewDetailsButton";
 
 const normalizeProjectList = (payload) => {
@@ -58,6 +60,9 @@ const getStatusClass = (status) => {
 export default function ProjectList() {
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
+    const [isAdmin] = useAdmin();
+    const [isDeveloper] = useDeveloper();
+    const isDeveloperRole = !isAdmin && Boolean(isDeveloper);
 
     const { data: projects = [], isPending, refetch } = useQuery({
         queryKey: ["admin-project-list"],
@@ -111,13 +116,15 @@ export default function ProjectList() {
                 </div>
                 <h2 className="text-xl font-semibold text-[#0F172A]">No projects found</h2>
                 <p className="mt-2 text-sm text-[#475569]">Create a new project to get started.</p>
-                <button
-                    type="button"
-                    onClick={() => navigate("/dashboard/project/add")}
-                    className="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                >
-                    Add Project
-                </button>
+                {!isDeveloperRole && (
+                    <button
+                        type="button"
+                        onClick={() => navigate("/dashboard/project/add")}
+                        className="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                    >
+                        Add Project
+                    </button>
+                )}
             </div>
         );
     }
@@ -130,13 +137,15 @@ export default function ProjectList() {
                     <p className="mt-1 text-sm text-[#475569]">Total projects: {projects.length}</p>
                 </div>
 
-                <button
-                    type="button"
-                    onClick={() => navigate("/dashboard/project/add")}
-                    className="rounded-xl bg-[#2974FF] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#1558D6]"
-                >
-                    Add Project
-                </button>
+                {!isDeveloperRole && (
+                    <button
+                        type="button"
+                        onClick={() => navigate("/dashboard/project/add")}
+                        className="rounded-xl bg-[#2974FF] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#1558D6]"
+                    >
+                        Add Project
+                    </button>
+                )}
             </div>
 
             <div className="hidden overflow-x-auto rounded-xl border border-[#E2E8F0] bg-white shadow-md md:block">
@@ -170,22 +179,26 @@ export default function ProjectList() {
                                 <td className="px-6 py-4">
                                     <div className="flex items-center justify-center gap-3">
                                         <ViewDetailsButton to={`/dashboard/project/${project._id}`} className="px-2 py-1 text-[10px]" />
-                                        <button
-                                            type="button"
-                                            onClick={() => navigate(`/dashboard/project/edit/${project._id}`)}
-                                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleDelete(project._id, project.name)}
-                                            className="text-red-500 transition hover:text-red-700"
-                                            title="Delete project"
-                                            aria-label="Delete project"
-                                        >
-                                            <FaTrashAlt size={16} />
-                                        </button>
+                                        {!isDeveloperRole && (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => navigate(`/dashboard/project/edit/${project._id}`)}
+                                                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDelete(project._id, project.name)}
+                                                    className="text-red-500 transition hover:text-red-700"
+                                                    title="Delete project"
+                                                    aria-label="Delete project"
+                                                >
+                                                    <FaTrashAlt size={16} />
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -207,22 +220,26 @@ export default function ProjectList() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <ViewDetailsButton to={`/dashboard/project/${project._id}`} className="px-2 py-1 text-[10px]" />
-                                <button
-                                    type="button"
-                                    onClick={() => navigate(`/dashboard/project/edit/${project._id}`)}
-                                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleDelete(project._id, project.name)}
-                                    className="text-red-500 transition hover:text-red-700"
-                                    title="Delete project"
-                                    aria-label="Delete project"
-                                >
-                                    <FaTrashAlt size={15} />
-                                </button>
+                                {!isDeveloperRole && (
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={() => navigate(`/dashboard/project/edit/${project._id}`)}
+                                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-700 hover:bg-slate-50"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDelete(project._id, project.name)}
+                                            className="text-red-500 transition hover:text-red-700"
+                                            title="Delete project"
+                                            aria-label="Delete project"
+                                        >
+                                            <FaTrashAlt size={15} />
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
 

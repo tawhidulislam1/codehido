@@ -171,7 +171,7 @@ const DashboardLayout = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/dashboard/profile" className={navLinkClass}>
+                  <NavLink to="/my-account/profile" className={navLinkClass}>
                     <FaUserCircle /> {isDeveloperRole ? "Profile" : "Admin Profile"}
                   </NavLink>
                 </li>

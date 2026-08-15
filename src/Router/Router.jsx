@@ -51,6 +51,11 @@ import ProjectList from "../Page/Dashboard/Project/ProjectList";
 import ProjectDetails from "../Page/Dashboard/Project/ProjectDetails";
 import AddProject from "../Page/Dashboard/Project/AddProject";
 import EditProject from "../Page/Dashboard/Project/EditProject";
+import MyAccountLayout from "../Page/MyAccount/MyAccountLayout";
+import MyReviews from "../Page/MyAccount/MyReviews";
+import MyMessages from "../Page/MyAccount/MyMessages";
+import MyDonations from "../Page/MyAccount/MyDonations";
+import ChangePassword from "../Page/MyAccount/ChangePassword";
 
 const Router = createBrowserRouter([
     {
@@ -130,6 +135,36 @@ const Router = createBrowserRouter([
         ]
 
 
+    },
+    {
+        path: 'my-account',
+        element: <PrivateRoute><MyAccountLayout /></PrivateRoute>,
+        children: [
+            {
+                path: 'profile',
+                element: <PrivateRoute><Profile /></PrivateRoute>
+            },
+            {
+                path: 'reviews',
+                element: <PrivateRoute><MyReviews /></PrivateRoute>
+            },
+            {
+                path: 'messages',
+                element: <PrivateRoute><MyMessages /></PrivateRoute>
+            },
+            {
+                path: 'donations',
+                element: <PrivateRoute><MyDonations /></PrivateRoute>
+            },
+            {
+                path: 'change-password',
+                element: <PrivateRoute><ChangePassword /></PrivateRoute>
+            },
+            {
+                path: '',
+                element: <PrivateRoute><Profile /></PrivateRoute>
+            }
+        ]
     },
     {
         path: 'dashboard',
@@ -259,11 +294,6 @@ const Router = createBrowserRouter([
                 path: 'contact/:id',
                 element: <DeveloperRoute><ContactDetails /></DeveloperRoute>
             },
-            {
-                path: 'profile',
-                element: <PrivateRoute><Profile /></PrivateRoute>
-            },
-
         ]
     }
 
