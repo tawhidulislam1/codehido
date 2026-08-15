@@ -18,7 +18,7 @@ import AllUsers from "../Page/Dashboard/allUser/AllUser";
 import AdminRoute from "./AdmintRoute";
 import Dashboard from "../Page/Dashboard/Dashboard/Dashboard";
 import AdminPortfolio from "../Page/Dashboard/Portfolio/Portfolio";
-import AddProject from "../Page/Dashboard/Portfolio/AddProfolio";
+import AddPortfolio from "../Page/Dashboard/Portfolio/AddProfolio";
 import EditPortfolio from "../Page/Dashboard/Portfolio/EditProfolio";
 import ViewPortfolio from "../Page/Portfolio/viewPortfolio";
 import TeamTable from "../Page/Dashboard/Teams/TeamList";
@@ -46,6 +46,10 @@ import ReviewDetails from "../Page/Dashboard/Reviews/ReviewDetails";
 import DonationRequestDetails from "../Page/Dashboard/Donation/DonationRequestDetails";
 import ContactList from "../Page/Dashboard/Contact/ContactList";
 import ContactDetails from "../Page/Dashboard/Contact/ContactDetails";
+import ProjectList from "../Page/Dashboard/Project/ProjectList";
+import ProjectDetails from "../Page/Dashboard/Project/ProjectDetails";
+import AddProject from "../Page/Dashboard/Project/AddProject";
+import EditProject from "../Page/Dashboard/Project/EditProject";
 
 const Router = createBrowserRouter([
     {
@@ -152,7 +156,7 @@ const Router = createBrowserRouter([
             },
             {
                 path: 'add-portfolio',
-                element: <AddProject></AddProject>
+                element: <AddPortfolio></AddPortfolio>
             },
             {
                 path: 'edit-portfolio/:id',
@@ -229,6 +233,22 @@ const Router = createBrowserRouter([
             {
                 path: 'reviews/:id',
                 element: <AdminRoute><ReviewDetails /></AdminRoute>
+            },
+            {
+                path: 'project',
+                element: <ProjectList />
+            },
+            {
+                path: 'project/:id',
+                element: <AdminRoute><ProjectDetails /></AdminRoute>
+            },
+            {
+                path: 'project/add',
+                element: <AdminRoute><AddProject /></AdminRoute>
+            },
+            {
+                path: 'project/edit/:id',
+                element: <AdminRoute><EditProject /></AdminRoute>
             },
             {
                 path: 'contact',

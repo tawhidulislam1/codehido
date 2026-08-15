@@ -50,22 +50,60 @@ const chartData = [
 export default function Dashboard() {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
-    const { data: dashboardStats = {}, isPending } = useQuery({
+    const { data: dashboardStats = {}, isLoading, refetch } = useQuery({
         queryKey: ['dashboardStats'],
         queryFn: async () => {
             const res = await axiosSecure.get('/dashboard/stats');
             return res.data;
         },
+        // Refresh periodically and on window focus so admin sees live numbers
+        refetchInterval: 60_000,
+        refetchOnWindowFocus: true,
+        onSuccess: (d) => console.debug('dashboardStats loaded', d),
     });
+    // Normalize dashboard stats from varying API shapes to make the UI resilient.
+    const normalizeDashboardStats = (raw) => {
+        const root = raw?.data ?? raw ?? {};
+        const get = (candidates) => {
+            for (const key of candidates) {
+                const parts = key.split('.');
+                let cur = root;
+                let found = true;
+                for (const p of parts) {
+                    if (cur == null) {
+                        found = false;
+                        break;
+                    }
+                    cur = cur[p];
+                }
+                if (cur !== undefined && cur !== null) return cur;
+            }
+            return undefined;
+        };
+
+        const totalUsers = get(['totalUsers', 'total_users', 'usersCount', 'users_count', 'users.total', 'users', 'total']);
+        const totalPortfolio = get(['totalPortfolio', 'total_portfolio', 'portfoliosCount', 'portfolio_count', 'portfolio.total', 'projects', 'projectsCount', 'portfolios']);
+        const activePortfolio = get(['activePortfolio', 'active_portfolio', 'active_projects', 'activeProjects']);
+        const inactivePortfolio = get(['inactivePortfolio', 'inactive_portfolio', 'inactive_projects', 'inactiveProjects']);
+
+        return {
+            totalUsers: Number(totalUsers) || 0,
+            totalPortfolio: Number(totalPortfolio) || 0,
+            activePortfolio: Number(activePortfolio) || 0,
+            inactivePortfolio: Number(inactivePortfolio) || 0,
+        };
+    };
+
+    const normalized = normalizeDashboardStats(dashboardStats);
 
     const stats = [
-        { id: 1, title: "Total Users", value: dashboardStats.totalUsers ?? 0, change: "+8%" },
-        { id: 2, title: "Total Portfolio", value: dashboardStats.totalPortfolio ?? 0, change: "+5%" },
-        { id: 3, title: "Active Portfolio", value: dashboardStats.activePortfolio ?? 0, change: "+10%" },
-        { id: 4, title: "Inactive Portfolio", value: dashboardStats.inactivePortfolio ?? 0, change: "-3%" },
+        { id: 1, title: "Total Users", value: normalized.totalUsers, change: "+8%" },
+        { id: 2, title: "Total Portfolio", value: normalized.totalPortfolio, change: "+5%" },
+        { id: 3, title: "Active Portfolio", value: normalized.activePortfolio, change: "+10%" },
+        { id: 4, title: "Inactive Portfolio", value: normalized.inactivePortfolio, change: "-3%" },
     ];
 
-    if (isPending) {
+    if (isLoading) {
         return <div className="flex justify-center items-center h-64 gap-2">
             <span className="loading loading-ball loading-xs"></span>
             <span className="loading loading-ball loading-sm"></span>

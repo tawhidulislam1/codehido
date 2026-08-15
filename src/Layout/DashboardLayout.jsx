@@ -11,6 +11,7 @@ import {
   FaSearch,
   FaAd,
   FaEnvelope,
+  FaFolderOpen,
 } from "react-icons/fa";
 import {
   MdMenu,
@@ -154,6 +155,11 @@ const DashboardLayout = () => {
                 <li>
                   <NavLink to="/dashboard/users" className={navLinkClass}>
                     <FaUsers /> Manage Users
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/project" className={navLinkClass}>
+                    <FaFolderOpen /> Project
                   </NavLink>
                 </li>
                 <li>
