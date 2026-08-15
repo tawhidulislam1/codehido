@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import HomeLayout from "../Layout/HomeLayout";
 import Home from "../Page/Home/Home";
 import About from "../Page/About/About";
@@ -17,6 +17,9 @@ import DashboardLayout from "../Layout/DashboardLayout";
 import AllUsers from "../Page/Dashboard/allUser/AllUser";
 import AdminRoute from "./AdmintRoute";
 import DeveloperRoute from "./DeveloperRoute";
+import useAuth from "../Hooks/useAuth";
+import useAdmin from "../Hooks/useAdmin";
+import useDeveloper from "../Hooks/useDeveloper";
 import Dashboard from "../Page/Dashboard/Dashboard/Dashboard";
 import AdminPortfolio from "../Page/Dashboard/Portfolio/Portfolio";
 import AddPortfolio from "../Page/Dashboard/Portfolio/AddProfolio";
@@ -56,6 +59,33 @@ import MyReviews from "../Page/MyAccount/MyReviews";
 import MyMessages from "../Page/MyAccount/MyMessages";
 import MyDonations from "../Page/MyAccount/MyDonations";
 import ChangePassword from "../Page/MyAccount/ChangePassword";
+
+const DashboardAccessGuard = () => {
+    const { user, loading } = useAuth();
+    const [isAdmin, isAdminLoading] = useAdmin();
+    const [isDeveloper, isDeveloperLoading] = useDeveloper();
+
+    if (loading || isAdminLoading || isDeveloperLoading) {
+        return (
+            <div className="loading-container">
+                <span className="loading loading-ball loading-xs"></span>
+                <span className="loading loading-ball loading-sm"></span>
+                <span className="loading loading-ball loading-md"></span>
+                <span className="loading loading-ball loading-lg"></span>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (isAdmin || isDeveloper) {
+        return <DashboardLayout />;
+    }
+
+    return <Navigate to="/my-account/profile" replace />;
+};
 
 const Router = createBrowserRouter([
     {
@@ -168,8 +198,16 @@ const Router = createBrowserRouter([
     },
     {
         path: 'dashboard',
-        element: <PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
+        element: <DashboardAccessGuard />,
         children: [
+            {
+                index: true,
+                element: <Navigate to="/dashboard/dashboard" replace />
+            },
+            {
+                path: 'profile',
+                element: <Navigate to="/my-account/profile" replace />
+            },
             {
                 path: 'users',
                 element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
@@ -293,6 +331,10 @@ const Router = createBrowserRouter([
             {
                 path: 'contact/:id',
                 element: <DeveloperRoute><ContactDetails /></DeveloperRoute>
+            },
+            {
+                path: 'change-password',
+                element: <DeveloperRoute><ChangePassword /></DeveloperRoute>
             },
         ]
     }

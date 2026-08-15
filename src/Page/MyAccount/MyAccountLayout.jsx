@@ -61,7 +61,7 @@ export default function MyAccountLayout() {
 
             <nav className="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">
               <ul className="space-y-2 text-sm">
-                // eslint-disable-next-line no-unused-vars
+                
                 {accountLinks.map(({ label, to, icon: Icon }) => (
                   <li key={to}>
                     <NavLink to={to} className={navLinkClass}>

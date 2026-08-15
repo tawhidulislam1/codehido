@@ -12,6 +12,7 @@ import {
   FaAd,
   FaEnvelope,
   FaFolderOpen,
+  FaKey,
 } from "react-icons/fa";
 import {
   MdMenu,
@@ -173,6 +174,11 @@ const DashboardLayout = () => {
                 <li>
                   <NavLink to="/my-account/profile" className={navLinkClass}>
                     <FaUserCircle /> {isDeveloperRole ? "Profile" : "Admin Profile"}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/change-password" className={navLinkClass}>
+                    <FaKey /> Change Password
                   </NavLink>
                 </li>
 
