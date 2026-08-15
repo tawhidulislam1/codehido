@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
-import { FaUserCircle, FaRegCommentDots, FaEnvelope, FaDonate, FaKey } from "react-icons/fa";
+import { FaUserCircle, FaRegCommentDots, FaEnvelope, FaDonate, FaKey, FaHome, FaBlog } from "react-icons/fa";
 import { MdMenu } from "react-icons/md";
 import { IoIosClose } from "react-icons/io";
+import useAuth from "../../Hooks/useAuth";
 
 const accountLinks = [
+  { label: "Home", to: "/", icon: FaHome },
+  { label: "Blog", to: "/blog", icon: FaBlog },
   { label: "Profile", to: "/my-account/profile", icon: FaUserCircle },
   { label: "My Reviews", to: "/my-account/reviews", icon: FaRegCommentDots },
   { label: "My Messages", to: "/my-account/messages", icon: FaEnvelope },
@@ -23,6 +26,8 @@ const navLinkClass = ({ isActive }) =>
 export default function MyAccountLayout() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+  const { logOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
@@ -31,6 +36,15 @@ export default function MyAccountLayout() {
   }, []);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+
+  const handleLogOut = async () => {
+    try {
+      await logOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#E6F0FF] text-[#0F172A] overflow-hidden">
@@ -71,6 +85,15 @@ export default function MyAccountLayout() {
                 ))}
               </ul>
             </nav>
+
+            <div className="border-t border-[#F5FAFF]/20 p-3">
+              <button
+                onClick={handleLogOut}
+                className="flex items-center gap-3 w-full px-4 py-2 rounded-xl text-[#F5FAFF] hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                <IoIosClose size={20} /> Logout
+              </button>
+            </div>
           </motion.aside>
         )}
       </AnimatePresence>
